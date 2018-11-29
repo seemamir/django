@@ -24,12 +24,14 @@ import SocialLoginDone from 'containers/SocialLoginDone/Loadable';
 import { compose } from 'redux';
 import ForgetPassword from 'containers/ForgetPassword/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import Header from 'containers/Headerr/Loadable';
 import { createStructuredSelector } from 'reselect';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import reducer from './reducer';
 import saga from './saga';
 import * as a from './actions';
+
 // import { selectGlobal } from './selectors';
 
 import GlobalStyle from '../../global-styles';
@@ -43,6 +45,8 @@ export class App extends React.Component {
     return (
       <BrowserRouter>
         <div>
+            <Header history={this.props.history}/>
+
           <Switch>
             <Route path="/view/:id" component={ViewNews} />
             <Route path="/home" component={Home} />
@@ -55,8 +59,8 @@ export class App extends React.Component {
             <Route path="/" component={Login} />
             <Route component={NotFoundPage} />
           </Switch>
-          <Footer />
           <GlobalStyle />
+          <Footer />
         </div>
       </BrowserRouter>
     );

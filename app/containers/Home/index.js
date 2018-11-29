@@ -44,7 +44,6 @@ export class Home extends React.Component {
         <Layout>
           <Sidebar filter={this.filter} />
           <Layout style={{ marginLeft: '200px' }}>
-            <Header history={this.props.history}/>
             <Content className="content">
               <div className="filters">
                 <Button

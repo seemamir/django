@@ -4,20 +4,27 @@
  *
  */
 
-import { DEFAULT_ACTION, FORGET_PASSWORD, SET_RESPONSE } from './constants';
+import * as c from './constants';
 
 export function defaultAction() {
   return {
-    type: DEFAULT_ACTION,
+    type: c.DEFAULT_ACTION,
   };
 }
-export function forgetPassword() {
+export function forgetPassword(payload) {
   return {
-    type: FORGET_PASSWORD,
+    type: c.FORGET_PASSWORD,
+    payload,
   };
 }
-export function setResponse() {
+export function setResponse(payload) {
   return {
-    type: SET_RESPONSE,
+    type: c.SET_RESPONSE,
+    payload,
+  };
+}
+export function resetResponse() {
+  return {
+    type: c.RESET_RESPONSE,
   };
 }

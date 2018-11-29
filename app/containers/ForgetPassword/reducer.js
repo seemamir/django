@@ -5,7 +5,7 @@
  */
 
 import { fromJS } from 'immutable';
-import { DEFAULT_ACTION, SET_RESPONSE } from './constants';
+import * as c from './constants';
 
 export const initialState = fromJS({
   response: {},
@@ -13,10 +13,12 @@ export const initialState = fromJS({
 
 function forgetPasswordReducer(state = initialState, action) {
   switch (action.type) {
-    case DEFAULT_ACTION:
+    case c.DEFAULT_ACTION:
       return state;
-    case SET_RESPONSE:
+    case c.SET_RESPONSE:
       return state.set('response', action.payload);
+    case c.RESET_RESPONSE:
+      return state.set('response', {});
     default:
       return state;
   }

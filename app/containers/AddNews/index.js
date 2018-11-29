@@ -81,7 +81,6 @@ componentDidMount(){
           <title>AddNews</title>
           <meta name="description" content="Description of AddNews" />
         </Helmet>
-        <Header history={this.props.history}/>
         <div className="container">
           <div className="bg-white">
             <Row>

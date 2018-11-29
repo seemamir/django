@@ -13,7 +13,16 @@ const { Footer } = Layout;
 
 function Footter() {
   return (
-    <Footer style={{ textAlign: 'center' }}>All rights reserved ©2018.</Footer>
+    <Footer
+      style={{
+        textAlign: 'center',
+        position: 'relative',
+        bottom: 0,
+        width: '100%',
+      }}
+    >
+      All rights reserved ©2018.
+    </Footer>
   );
 }
 

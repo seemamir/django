@@ -6,18 +6,32 @@ import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
-import { Form, Icon, Input, Button, Row, Col } from 'antd';
+import { Form, Icon, Input, Button, Row, Col,Alert } from 'antd';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import makeSelectForgetPassword from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import * as a from './actions';
 const FormItem = Form.Item;
 
 /* eslint-disable react/prefer-stateless-function */
 export class ForgetPassword extends React.Component {
+  componentDidMount(){
+    this.props.reset()
+  }
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        this.props.forgetAction({email:values.email});
+      }
+    });
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
+    const {response} = this.props.forgetPassword;
     return (
       <div>
         <Helmet>
@@ -36,7 +50,7 @@ export class ForgetPassword extends React.Component {
                     rules: [
                       {
                         required: true,
-                        message: 'Please input your email!',
+                        message: 'Please enter your email!',
                       },
                     ],
                   })(
@@ -51,9 +65,30 @@ export class ForgetPassword extends React.Component {
                     />,
                   )}
                 </FormItem>
-
+                {response &&
+                  response.status &&
+                  response.status === 200 && (
+                    <Alert
+                      message={response.message.detail}
+                      type="success"
+                      showIcon
+                    />
+                  )}
+                {response &&
+                  response.status &&
+                  response.status !== 200 && (
+                    <Alert
+                      message="Something went wrong. Please try again later."
+                      type="error"
+                      showIcon
+                    />
+                  )}
                 <FormItem>
-                  <Button type="primary" className="login-form-button">
+                  <Button
+                    type="primary"
+                    className="login-form-button"
+                    htmlType="submit"
+                  >
                     Forget password
                   </Button>
                 </FormItem>
@@ -79,6 +114,8 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    forgetAction: payload => dispatch(a.forgetPassword(payload)),
+    reset: () => dispatch(a.resetResponse()),
   };
 }
 

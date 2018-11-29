@@ -196,7 +196,6 @@ export class NewsPage extends React.Component {
           <title>NewsPage</title>
           <meta name="description" content="Description of NewsPage" />
         </Helmet>
-        <Header history={this.props.history}/>
         <div className="container">
           <Row>
             <Col span={6}>

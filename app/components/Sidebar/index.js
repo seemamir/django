@@ -11,7 +11,12 @@ class Sidebar extends React.Component {
         className="sidebar"
         breakpoint="lg"
         collapsedWidth="0"
-        style={{ height: '100vh', paddingTop: '30px', position: 'fixed' }}
+        style={{
+          height: '100vh',
+          paddingTop: '30px',
+          position: 'fixed',
+          zIndex: '5',
+        }}
       >
         <div className="logo">
           <Link to="/home">
