@@ -45,7 +45,6 @@ export class App extends React.Component {
     return (
       <BrowserRouter>
         <div>
-            <Header history={this.props.history}/>
 
           <Switch>
             <Route path="/view/:id" component={ViewNews} />

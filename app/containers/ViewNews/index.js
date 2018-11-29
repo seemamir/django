@@ -13,11 +13,11 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import { get } from 'lodash';
-import {fetchUser} from "./api";
 
 import injectReducer from 'utils/injectReducer';
 import { Row, Col, Icon, Button, Form } from 'antd';
 import styled from 'styled-components';
+import { fetchUser } from './api';
 import makeSelectGlobalState from '../App/selectors';
 import makeSelectViewNews from './selectors';
 import reducer from './reducer';
@@ -63,39 +63,45 @@ class Comment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {email: ''}
-    }
+      user: { email: '' },
+    };
   }
+
   getName = () => {
-    let name = get(this,'state.user.username','')
-    let index = name.indexOf('@');
+    const name = get(this, 'state.user.username', '');
+    const index = name.indexOf('@');
     if (index > 0) {
       return name.split('@')[0];
     }
     return name;
-  }
-  fetchUser = async (uid) => {
+  };
+
+  fetchUser = async uid => {
     try {
-      let id = get(this,'state.user.id',null);
+      const id = get(this, 'state.user.id', null);
       if (!id) {
-        let response = await fetchUser(uid);
-        let user = get(response,'data',{});
+        const response = await fetchUser(uid);
+        const user = get(response, 'data', {});
         this.setState({
-          user: user
+          user,
         });
       }
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
     }
-  }
+  };
+
   render() {
-    let comment = get(this,'props.comment',{comment :''})
+    const comment = get(this, 'props.comment', { comment: '' });
     this.fetchUser(comment.user);
     return (
-      <div >
-        <div style={{margin: '20px 0'}} key={Math.random() * 10}> <b>{ this.getName() }</b> {comment.comment}</div>
+      <div>
+        <div style={{ margin: '20px 0' }} key={Math.random() * 10}>
+          {' '}
+          <b>{this.getName()}</b> {comment.comment}
+        </div>
       </div>
-    )
+    );
   }
 }
 
@@ -205,11 +211,9 @@ export class ViewNews extends React.Component {
     const { comments } = this.props.viewNews;
     if (comments instanceof Array) {
       if (comments.length == 0) {
-        return <div>No Comments</div>
+        return <div>No Comments</div>;
       }
-      const commentsA = comments.map(c => (
-        <Comment comment={c} />
-      ));
+      const commentsA = comments.map(c => <Comment comment={c} />);
       return <div className="comments">{commentsA}</div>;
     }
     return <p />;
@@ -223,6 +227,7 @@ export class ViewNews extends React.Component {
           <title>View Post</title>
           <meta name="description" content="Description of ViewNews" />
         </Helmet>
+        <Header history={this.props.history} />]
         <Wrapper>
           <div className="bg-white">
             <Row>
@@ -252,9 +257,7 @@ export class ViewNews extends React.Component {
                     <Col span={12} offset={6}>
                       <div className="main-sentence">
                         <h2>Main Sentence</h2>
-                        <p className="view-sentences">
-                          {post.main_sentence}
-                        </p>
+                        <p className="view-sentences">{post.main_sentence}</p>
                       </div>
                     </Col>
                   </Row>

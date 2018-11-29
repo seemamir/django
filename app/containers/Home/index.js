@@ -41,6 +41,8 @@ export class Home extends React.Component {
           <title>Home</title>
           <meta name="description" content="Description of Home" />
         </Helmet>
+        <Header history={this.props.history} />
+
         <Layout>
           <Sidebar filter={this.filter} />
           <Layout style={{ marginLeft: '200px' }}>
