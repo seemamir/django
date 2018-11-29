@@ -13,6 +13,7 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import { get } from 'lodash';
+import {fetchUser} from "./api";
 
 import injectReducer from 'utils/injectReducer';
 import { Row, Col, Icon, Button, Form } from 'antd';
@@ -57,6 +58,47 @@ const Sidebar = styled.div`
     margin-top: 50px;
   }
 `;
+
+class Comment extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {email: ''}
+    }
+  }
+  getName = () => {
+    let name = get(this,'state.user.username','')
+    let index = name.indexOf('@');
+    if (index > 0) {
+      return name.split('@')[0];
+    }
+    return name;
+  }
+  fetchUser = async (uid) => {
+    try {
+      let id = get(this,'state.user.id',null);
+      if (!id) {
+        let response = await fetchUser(uid);
+        let user = get(response,'data',{});
+        this.setState({
+          user: user
+        });
+      }
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
+  render() {
+    let comment = get(this,'props.comment',{comment :''})
+    this.fetchUser(comment.user);
+    return (
+      <div >
+        <div style={{margin: '20px 0'}} key={Math.random() * 10}> <b>{ this.getName() }</b> {comment.comment}</div>
+      </div>
+    )
+  }
+}
+
 /* eslint-disable react/prefer-stateless-function */
 export class ViewNews extends React.Component {
   constructor(props) {
@@ -162,8 +204,11 @@ export class ViewNews extends React.Component {
   renderComments = () => {
     const { comments } = this.props.viewNews;
     if (comments instanceof Array) {
+      if (comments.length == 0) {
+        return <div>No Comments</div>
+      }
       const commentsA = comments.map(c => (
-        <p key={Math.random() * 10}>{c.comment}</p>
+        <Comment comment={c} />
       ));
       return <div className="comments">{commentsA}</div>;
     }
@@ -172,7 +217,6 @@ export class ViewNews extends React.Component {
 
   render() {
     const { post } = this.props.viewNews;
-    console.log(post);
     return (
       <div>
         <Helmet>
