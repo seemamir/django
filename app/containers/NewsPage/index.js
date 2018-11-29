@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Row, Col, Card, Upload, Icon, message, Button } from 'antd';
+import { Row, Col, Card, Alert, Icon, message, Button } from 'antd';
 import { get } from 'lodash';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -51,7 +51,7 @@ class SavedPostView extends React.Component {
     const image = get(this, 'state.post.thumbnail_image', '');
     return (
       <Card
-        style={{ width: 350 }}
+        style={{ maxWidth: 350 }}
         className="news-box"
         cover={<img alt="example" src={image} />}
       >
@@ -78,6 +78,7 @@ export class NewsPage extends React.Component {
   }
 
   componentDidMount() {
+    this.props.reset()
     const userID = get(this, 'props.global.user.id', null);
     // const { user } = this.props.global;
     this.props.fetchPost(userID);
@@ -121,7 +122,6 @@ export class NewsPage extends React.Component {
   };
 
   saveProfile = () => {
-    let profileID;
     let profile = localStorage.getItem('profile') || '{}';
     profile = JSON.parse(profile);
     this.props.updateProfile({
@@ -152,7 +152,7 @@ export class NewsPage extends React.Component {
     const posts = get(this, 'props.newsPage.posts', []);
     if (posts.length > 0) {
       return posts.map((item, i) => (
-        <Col span={6} key={i} >
+        <Col span={6} key={i}>
           <SavedPostView
             reload={() => {
               const userID = get(this, 'props.global.user.id', null);
@@ -189,13 +189,14 @@ export class NewsPage extends React.Component {
         />
       );
     }
+    const {response} = this.props.newsPage;
     return (
       <div>
         <Helmet>
           <title>NewsPage</title>
           <meta name="description" content="Description of NewsPage" />
         </Helmet>
-        <Header />
+        <Header history={this.props.history}/>
         <div className="container">
           <Row>
             <Col span={6}>
@@ -230,6 +231,16 @@ export class NewsPage extends React.Component {
                   placeholder="Enter your bio"
                 />
               </Card>
+              {response &&
+                response.status &&
+                response.status === 200 && (
+                  <Alert
+                    message="Saved successfully"
+                    type="success"
+                    showIcon
+                    style={{marginTop:"20px", marginBottom: "0"}}
+                  />
+                )}
               <Button
                 onClick={() => this.saveProfile()}
                 type="primary"
@@ -261,6 +272,7 @@ function mapDispatchToProps(dispatch) {
     fetchPost: id => dispatch(a.fetchPosts(id)),
     updateProfile: data => dispatch(a.updateProfile(data)),
     fetchProfile: data => dispatch(a.fetchProfile(data)),
+    reset: () => dispatch(a.resetResponse()),
   };
 }
 

@@ -17,6 +17,17 @@ export function fetchPosts(id) {
     id,
   };
 }
+export function setResponse(payload) {
+  return {
+    type: c.SET_RESPONSE,
+    payload,
+  };
+}
+export function resetResponse() {
+  return {
+    type: c.SET_RESPONSE,
+  };
+}
 
 export function updateProfile(payload) {
   return {

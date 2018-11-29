@@ -179,7 +179,7 @@ export class ViewNews extends React.Component {
           <title>View Post</title>
           <meta name="description" content="Description of ViewNews" />
         </Helmet>
-        <Header />
+        <Header history={this.props.history}/>
         <Wrapper>
           <div className="bg-white">
             <Row>

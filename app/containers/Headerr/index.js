@@ -76,7 +76,7 @@ export class Headerr extends React.Component {
           <Link to="/home" className="logo-header">
             Home
           </Link>
-          <div onClick={this.handleRedirect}>
+          <div onClick={this.handleRedirect} style={{ cursor: 'pointer' }}>
             <strong>{this.state.username}</strong>
           </div>
         </Header>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Layout, Menu, Icon } from 'antd';
 import Logo from '../../images/logo.png';
 // import PropTypes from 'prop-types';
@@ -13,9 +14,9 @@ class Sidebar extends React.Component {
         style={{ height: '100vh', paddingTop: '30px', position: 'fixed' }}
       >
         <div className="logo">
-          <a href="/home">
+          <Link to="/home">
             <img src={Logo} alt="Logo" />
-          </a>
+          </Link>
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['0']}>
           <Menu.Item key="0" onClick={() => this.props.filter('')}>

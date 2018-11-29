@@ -62,7 +62,6 @@ componentDidMount(){
     });
     setTimeout(() => {
       const { response } = this.props.addNews;
-      console.log(this.props)
       if (response && response.status && response.status === 201) {
         this.props.history.push(`/view/${response.message.id}`);
       }
@@ -75,14 +74,14 @@ componentDidMount(){
       labelCol: { span: 4 },
       wrapperCol: { span: 20 },
     };
-
+    const {response} = this.props.addNews
     return (
       <div>
         <Helmet>
           <title>AddNews</title>
           <meta name="description" content="Description of AddNews" />
         </Helmet>
-        <Header />
+        <Header history={this.props.history}/>
         <div className="container">
           <div className="bg-white">
             <Row>
@@ -301,6 +300,16 @@ componentDidMount(){
                       </div>,
                     )}
                   </FormItem>
+                  {response &&
+                    response.status &&
+                    response.status !== 200 && (
+                      <Alert
+                        message="Something went wront with server please try again!"
+                        type="error"
+                        showIcon
+                        style={{ marginTop: "20px", marginBottom: "0" }}
+                      />
+                    )}
                   <FormItem>
                     <Button type="primary" htmlType="submit">
                       Publish

@@ -1,4 +1,4 @@
-import { takeLatest, call, put, cancel, take } from 'redux-saga/effects';
+import { takeLatest, call, put } from 'redux-saga/effects';
 import { get } from 'lodash';
 import * as api from './api';
 import * as a from './actions';
@@ -14,6 +14,7 @@ export function* index(action) {
 export function* updateProfile(action) {
   try {
     const res = yield call(api.updateProfile, action.payload);
+    yield put(a.setResponse({ message: res.data, status: res.status }));
   } catch (e) {
     console.log(e.message);
   }
