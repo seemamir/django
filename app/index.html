@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- The first thing in any HTML file should be the charset -->
+    <meta charset="utf-8" />
+
+    <!-- Make the page mobile compatible -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Allow installing the app to the homescreen -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <title>News App</title>
+  </head>
+
+  <body>
+    <!-- Display a message if JS has been disabled on the browser. -->
+    <noscript
+      >If you're seeing this message, that means
+      <strong>JavaScript has been disabled on your browser</strong>, please
+      <strong>enable JS</strong> to make this app work.</noscript
+    >
+
+    <!-- The app hooks into this div -->
+    <div id="app"></div>
+    <!--
+      A lot of magic happens in this file. HtmlWebpackPlugin automatically injects all assets (e.g. bundle.js, main.css) with the correct HTML tags, which is why they are missing in this file. Don't add any assets here! (Check out webpack.dev.babel.js and webpack.prod.babel.js if you want to know more)
+    -->
+
+    <script type="text/javascript" src="https://platform.linkedin.com/in.js">
+      // api_key: 77at0q1dqolhng
+      api_key: 81abyi9l7qhqjh
+      authorize: true
+    </script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+      function start() {
+        // 2. Initialize the JavaScript client library.
+        gapi.client
+          .init({
+            apiKey: 'AIzaSyD6fh7zW7pgh_BZM-yicehuBe9syftxD68',
+            // clientId and scope are optional if auth is not required.
+            clientId:
+              '168590212607-79ghi0kaotul7s2sc2rioc328acolka1.apps.googleusercontent.com',
+            scope: 'profile',
+          })
+          .then(function() {
+            // 3. Initialize and make the API request.
+            return gapi.client.request({
+              path:
+                'https://people.googleapis.com/v1/people/me?requestMask.includeField=person.names',
+            });
+          })
+          .then(
+            function(response) {
+              console.log(response.result);
+            },
+            function(reason) {
+              console.log('Error: ' + reason.result.error.message);
+            },
+          );
+      }
+      // 1. Load the JavaScript client library.
+      gapi.load('client', start);
+    </script>
+
+    <link rel="icon" href="/favicon.ico" />
+    <script
+      id="facebook-jssdk"
+      src="https://connect.facebook.net/en_US/sdk.js"
+      async=""
+    ></script>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId: '1416302651767157',
+          autoLogAppEvents: true,
+          xfbml: true,
+          version: 'v3.2',
+        });
+      };
+
+      (function(d, s, id) {
+        var js,
+          fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+          return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = 'https://connect.facebook.net/en_US/sdk.js';
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, 'script', 'facebook-jssdk');
+    </script>
+  </body>
+</html>
