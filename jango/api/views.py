@@ -13,6 +13,9 @@ from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 import uuid
+
+import smtplib
+import json
 # Create your views here.
 
 
@@ -85,23 +88,23 @@ def ForgetPassword(request):
   method = request.method
   if method == 'GET':
     return JsonResponse({'error': 'Must be get method'})
-  email = request.POST['email']
+  email = request.GET.get('email',1)
+  if email == 1 or email == '':
+    return JsonResponse({'message':'Email is required'})
+  print(email)
   token = ''.join(random.sample(string.ascii_uppercase + string.digits*4, 4))
   forgetPasswordInstance = ForgetPasswordModel.objects.create()
   forgetPasswordInstance.email = email
   forgetPasswordInstance.token =  token
   forgetPasswordInstance.save()
-  import smtplib
   server = smtplib.SMTP('smtp.gmail.com', 587)
   server.connect("smtp.gmail.com",587)
   server.ehlo()
   server.starttls()
   server.ehlo()
-  server.login('ilyas.datoo@gmail.com', 'yourmailpassword')
+  server.login('ilyas.datoo@gmail.com', '********')
   server.sendmail('ilyas.datoo@gmail.com', email, "Hey, use {token} to reset your password.".format(token=token) )
-  server.quit()
-  if (email == ''):
-    return JsonResponse({'success': 'false','message': 'Email is required'})
+  server.quit() 
   return JsonResponse({'success': 'true','message': 'Email has been sent to the requested email'})
   
 
@@ -109,9 +112,11 @@ def ResetPassword(request):
   method = request.method
   if method == 'GET':
     return JsonResponse({'message': 'Must be get method'})
-  token = request.POST.get('token',1)
-  password = request.POST.get('password',1)
-  confirm_password = request.POST.get('confirm_password',1)
+  data = json.loads(request.body)
+  token = data.get('token',1)
+  password = data.get('password',1)
+  confirm_password = data.get('confirm_password',1)
+  
   if token == 1 or password == 1 or confirm_password == 1:
     return JsonResponse({'message': 'Token, password, confirm_password are required'})
   if password != confirm_password:

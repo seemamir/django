@@ -25,6 +25,9 @@ export class ForgetPassword extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.props.forgetAction({email:values.email});
+        setTimeout(() => {
+          this.props.history.push('/reset-password');
+        },3000)
       }
     });
   };

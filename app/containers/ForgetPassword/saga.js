@@ -6,7 +6,6 @@ import * as c from './constants';
 export function* forget(action) {
   try {
     const { payload } = action;
-    console.log(payload);
     const response = yield call(forgetApi, payload);
     yield put(setResponse({ message: response.data, status: response.status }));
   } catch (error) {
