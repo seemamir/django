@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Post,PostReaction,SavedPost, Comment,Profile, ForgetPassword as ForgetPasswordModel
-from .serializers import PostSerializer,PostReactionSerializer, SavedPostSerializer, UserSerializer,CommentSerializer, ProfileSerializer
+from .models import Post, PostReaction, SavedPost, Comment, Profile, CommentReply, PostVote, ForgetPassword as ForgetPasswordModel
+from .serializers import PostSerializer, PostReactionSerializer, SavedPostSerializer, UserSerializer,CommentSerializer, ProfileSerializer,CommentReplySerializer,PostVoteSerializer
 from django.shortcuts import get_object_or_404
 
 import random
@@ -25,6 +25,11 @@ class PostViewSet(viewsets.ModelViewSet):
   filter_backends = (DjangoFilterBackend,)
   filter_fields = ('id','title','category')
 
+class PostVoteViewSet(viewsets.ModelViewSet):
+  queryset = PostVote.objects.all()
+  serializer_class = PostVoteSerializer
+  filter_backends = (DjangoFilterBackend,)
+  filter_fields = ('post','user','vote_type')
 
 class ProfileViewSet(viewsets.ModelViewSet):
   queryset = Profile.objects.all()
@@ -37,6 +42,12 @@ class CommentViewSet(viewsets.ModelViewSet):
   serializer_class = CommentSerializer
   filter_backends = (DjangoFilterBackend,)
   filter_fields = ('id','user','post')
+
+class CommentReplyViewSet(viewsets.ModelViewSet):
+  queryset = CommentReply.objects.all()
+  serializer_class = CommentReplySerializer
+  filter_backends = (DjangoFilterBackend,)
+  filter_fields = ('id','user','comment')
 
 class PostReactionViewSet(viewsets.ModelViewSet):
   queryset = PostReaction.objects.all()

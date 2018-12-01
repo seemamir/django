@@ -1,6 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+
+
+VOTE_TYPE_CHOICES = (
+  ('DOWN_VOTE', 'Down vote'),
+  ('UP_VOTE', 'Up vote'),
+)
+
 # Create your models here.
 class Post(models.Model):
   title = models.CharField(max_length=250)
@@ -25,10 +33,22 @@ class Post(models.Model):
     return self.title
 
 
+class PostVote(models.Model):
+  post = models.ForeignKey(Post,on_delete=models.CASCADE)
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
+
+  def __str__(self):
+    return "Post {post} {vote_type}vote ".format(vote_type=self.vote_type,post=self.post)
+
+  class Meta:
+    unique_together = ('post','user')
+  
 class Profile(models.Model):
   user = models.ForeignKey(User,on_delete=models.CASCADE,unique=True)
   bio = models.TextField(blank=True)
   image = models.TextField(blank=True)
+  name = models.CharField(blank=True,max_length=150)
   
   def __str__(self):
     return "Post reaction"
@@ -40,6 +60,8 @@ class PostReaction(models.Model):
 
   def __str__(self):
     return "Post reaction"
+  class Meta:
+    unique_together = ('post','reaction_type','user')
 
 class SavedPost(models.Model):
   post = models.ForeignKey('api.Post',on_delete=models.CASCADE)
@@ -54,9 +76,15 @@ class Comment(models.Model):
   comment = models.TextField()
 
   def __str__(self):
-    return "Saved post"
+    return "Comment: {comment}".format(comment=self.comment)
 
+class CommentReply(models.Model):
+  user = models.ForeignKey(User, on_delete=models.CASCADE)
+  comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+  reply = models.TextField()
 
+  def __str__(self):
+    return "Comment reply: {reply}".format(reply=self.reply)
 
 class ForgetPassword(models.Model):
   email = models.CharField(max_length=150)
