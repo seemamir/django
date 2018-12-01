@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Row, Col, Card, Alert, Icon, message, Button } from 'antd';
+import { Row, Col, Card, Alert, Icon, message, Button, Input } from 'antd';
 import { get } from 'lodash';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -72,6 +72,7 @@ export class NewsPage extends React.Component {
     this.state = {
       loading: false,
       imageUrl: '',
+      name: '',
       bio: '',
       renderedPosts: [],
     };
@@ -87,6 +88,7 @@ export class NewsPage extends React.Component {
       this.setState({
         imageUrl: get(this.props, 'global.profile.image', ''),
         bio: get(this.props, 'global.profile.bio', ''),
+        name: get(this.props,'global.profile.name','')
       });
     }, 1500);
   }
@@ -128,6 +130,7 @@ export class NewsPage extends React.Component {
       id: profile.id,
       image: this.state.imageUrl,
       bio: this.state.bio,
+      name: this.state.name
     });
   };
 
@@ -222,6 +225,8 @@ export class NewsPage extends React.Component {
             </Col>
             <Col span={14}>
               <Card>
+                <Input style={{marginBottom: '10px'}} placeholder="Your name" 
+                  onChange={e => this.setState({ name: e.target.value })} value={this.state.name}  />
                 <textarea
                   name="bio"
                   rows="5"
@@ -230,7 +235,8 @@ export class NewsPage extends React.Component {
                   onChange={e => this.setState({ bio: e.target.value })}
                   style={{ width: '100%' }}
                   placeholder="Enter your bio"
-                />
+                  />
+                  {this.state.value}
               </Card>
               {response &&
                 response.status &&
