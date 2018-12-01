@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 from django.urls import path
 from rest_framework import routers
-from .views import PostViewSet, PostReactionViewSet, SavedPostViewSet, Login, Signup, RequestPasswordResetToken, ResetPassword, UserViewSet, CommentViewSet, ProfileViewSet
+from .views import PostViewSet, PostReactionViewSet, SavedPostViewSet, Login, Signup, ForgetPassword, UserViewSet, CommentViewSet, ProfileViewSet, ResetPassword
 from django.conf.urls import url
  
 router = routers.DefaultRouter()
@@ -14,7 +14,6 @@ router.register(r'user-profile', ProfileViewSet)
 
 urlpatterns = [
   url(r'', include(router.urls)),
-  path('signup',Signup),
-  path('resetPassword',ResetPassword),
-  path('requestPasswordResetToken',RequestPasswordResetToken),
+  url('forget-password/',ForgetPassword),
+  url('reset-password/',ResetPassword)
 ]

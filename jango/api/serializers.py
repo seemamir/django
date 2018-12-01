@@ -1,4 +1,4 @@
-from .models import Post,PostReaction,SavedPost, Comment, Profile
+from .models import Post,PostReaction,SavedPost, Comment, Profile, ForgetPassword
 from rest_framework import routers, serializers, viewsets
 from django.contrib.auth.models import User
 
@@ -22,6 +22,12 @@ class PostReactionSerializer(serializers.ModelSerializer):
   # user = UserSerializer(many=False, read_only=False)
   class Meta:
     model = PostReaction
+    fields = "__all__"
+
+class ForgetPasswordSerializer(serializers.ModelSerializer):
+  # user = UserSerializer(many=False, read_only=False)
+  class Meta:
+    model = ForgetPassword
     fields = "__all__"
 
 

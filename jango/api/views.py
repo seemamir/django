@@ -1,6 +1,10 @@
 from django.shortcuts import render
-from .models import Post,PostReaction,SavedPost, Comment,Profile
+from .models import Post,PostReaction,SavedPost, Comment,Profile, ForgetPassword as ForgetPasswordModel
 from .serializers import PostSerializer,PostReactionSerializer, SavedPostSerializer, UserSerializer,CommentSerializer, ProfileSerializer
+from django.shortcuts import get_object_or_404
+
+import random
+import string
 
 from django.contrib.auth.models import User
 from rest_framework import status, viewsets
@@ -8,6 +12,7 @@ from django.http import JsonResponse
 # import django_filters.rest_framework
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
+import uuid
 # Create your views here.
 
 
@@ -76,9 +81,56 @@ def Signup(request):
     return JsonResponse({'error': "This request only handles post request"})
 
 
-def RequestPasswordResetToken(request):
-  return 3
-
+def ForgetPassword(request):
+  method = request.method
+  if method == 'GET':
+    return JsonResponse({'error': 'Must be get method'})
+  email = request.POST['email']
+  token = ''.join(random.sample(string.ascii_uppercase + string.digits*4, 4))
+  forgetPasswordInstance = ForgetPasswordModel.objects.create()
+  forgetPasswordInstance.email = email
+  forgetPasswordInstance.token =  token
+  forgetPasswordInstance.save()
+  import smtplib
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.connect("smtp.gmail.com",587)
+  server.ehlo()
+  server.starttls()
+  server.ehlo()
+  server.login('ilyas.datoo@gmail.com', 'yourmailpassword')
+  server.sendmail('ilyas.datoo@gmail.com', email, "Hey, use {token} to reset your password.".format(token=token) )
+  server.quit()
+  if (email == ''):
+    return JsonResponse({'success': 'false','message': 'Email is required'})
+  return JsonResponse({'success': 'true','message': 'Email has been sent to the requested email'})
+  
 
 def ResetPassword(request):
-  return 4
+  method = request.method
+  if method == 'GET':
+    return JsonResponse({'message': 'Must be get method'})
+  token = request.POST.get('token',1)
+  password = request.POST.get('password',1)
+  confirm_password = request.POST.get('confirm_password',1)
+  if token == 1 or password == 1 or confirm_password == 1:
+    return JsonResponse({'message': 'Token, password, confirm_password are required'})
+  if password != confirm_password:
+    return JsonResponse({'message': 'Password does not matches'})
+  # try:
+  model = get_object_or_404(ForgetPasswordModel,token=token)
+  if model.token == token:
+    # change the password
+    user = get_object_or_404(User,email=model.email)
+    user.set_password(password)
+    user.save()
+    return JsonResponse({'message': 'Password changed'})
+  else:
+    return JsonResponse({'message': 'Token Expired'})
+  # except:
+
+  # if forget_password:
+  # email = request.POST['token']
+  # password = request.POST['password']
+  # confirm_password = request.POST['confirm_password']
+  # if password != confirm_password:
+  #   return JsonResponse({'error': 'Password doesnot matches confirm password'})

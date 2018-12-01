@@ -55,3 +55,11 @@ class Comment(models.Model):
 
   def __str__(self):
     return "Saved post"
+
+
+
+class ForgetPassword(models.Model):
+  email = models.CharField(max_length=150)
+  token = models.CharField(max_length=150)
+  def __str__(self):
+    return self.email;
