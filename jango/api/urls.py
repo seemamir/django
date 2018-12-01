@@ -17,5 +17,4 @@ urlpatterns = [
   path('signup',Signup),
   path('resetPassword',ResetPassword),
   path('requestPasswordResetToken',RequestPasswordResetToken),
-
 ]

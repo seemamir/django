@@ -21,6 +21,8 @@ from django.views.generic import TemplateView, RedirectView
 
 from rest_framework_swagger.views import get_swagger_view
 
+from django.contrib.auth import views
+
 schema_view = get_swagger_view(title='Pastebin API')
 
 
@@ -38,5 +40,5 @@ urlpatterns = [
     path(r'accounts/', include('allauth.urls')),
     path(r'rest-auth/', include('rest_auth.urls')),
     path(r'rest-auth/signup', include('rest_auth.registration.urls')),
-    path('api-docs', schema_view)
+    # url('fe/p-r/done/', views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
