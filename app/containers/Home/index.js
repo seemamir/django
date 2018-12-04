@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+import { fromJS } from 'immutable';
 import { Layout, List, Avatar, Button } from 'antd';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import makeSelectHome from './selectors';
+import isLogin from '../App/selectors';
 import reducer from './reducer';
 import saga from './saga';
 import Header from '../Headerr/Loadable';
@@ -17,24 +19,32 @@ const { Content } = Layout;
 
 /* eslint-disable react/prefer-stateless-function */
 export class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      logginUser: ''
+    };
+  }
+  
   componentDidMount() {
     this.props.fetchPosts();
     this.props.fetchUser();
   }
-
+  
   filter = category => {
     this.props.fetchPosts(category);
   };
-
+  
   viewPost = id => {
     this.props.history.push(`/view/${id}`);
   };
-
+  
   handleRedirect = () => {
     this.props.history.push('/add-news');
   };
-
+  
   render() {
+    const { user } = this.props.userInfo;
     return (
       <div>
         <Helmet>
@@ -127,9 +137,15 @@ export class Home extends React.Component {
                   </List.Item>
                 )}
               />
+              
+             {
+               user && user.is_superuser && (
               <Button onClick={this.handleRedirect} type="primary">
                 Add new post
               </Button>
+
+               )
+             }
             </Content>
           </Layout>
         </Layout>
@@ -142,6 +158,7 @@ Home.propTypes = {};
 
 const mapStateToProps = createStructuredSelector({
   home: makeSelectHome(),
+  userInfo: isLogin(), 
 });
 
 function mapDispatchToProps(dispatch) {

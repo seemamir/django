@@ -50,7 +50,7 @@ export class Login extends React.Component {
 
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.props.loginAction({ username: values.email, ...values });
+        this.props.loginAction({ username: values.email, password: values.password });
       }
     });
     setTimeout(() => {

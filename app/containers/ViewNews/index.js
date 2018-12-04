@@ -15,7 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import { get } from 'lodash';
 
 import injectReducer from 'utils/injectReducer';
-import { Row, Col, Icon, Button, Form } from 'antd';
+import { Row, Col, Icon, Button, Form, List, Avatar, Input  } from 'antd';
 import styled from 'styled-components';
 import { fetchUser } from './api';
 import makeSelectGlobalState from '../App/selectors';
@@ -64,6 +64,7 @@ class Comment extends React.Component {
     super(props);
     this.state = {
       user: { email: '' },
+      currendUser: this.getName()
     };
   }
 
@@ -75,6 +76,8 @@ class Comment extends React.Component {
     }
     return name;
   };
+
+
 
   fetchUser = async uid => {
     try {
@@ -96,9 +99,9 @@ class Comment extends React.Component {
     this.fetchUser(comment.user);
     return (
       <div>
-        <div style={{ margin: '20px 0' }} key={Math.random() * 10}>
+        <div style={{ margin: '5px 0' }} key={Math.random() * 10}>
           {' '}
-          <b>{this.getName()}</b> {comment.comment}
+          <b>{}</b> {comment.comment}
         </div>
       </div>
     );
@@ -165,11 +168,11 @@ export class ViewNews extends React.Component {
   componentWillUnmount() {
     this.props.unmount();
   }
-
+  
   handleRedirect = () => {
     this.props.history.push('/news-page');
   };
-
+  
   publishComment = () => {
     const { id } = this.props.match.params;
     const {
@@ -190,14 +193,14 @@ export class ViewNews extends React.Component {
       }, 500);
     }
   };
-
+  
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({
       [name]: value,
     });
   };
-
+  
   handleSave = () => {
     const { id } = this.props.match.params;
     const payload = {
@@ -206,19 +209,51 @@ export class ViewNews extends React.Component {
     };
     this.props.saveAsSavedPost(payload);
   };
-
+  
+  
+  
   renderComments = () => {
-    const { comments } = this.props.viewNews;
-    if (comments instanceof Array) {
-      if (comments.length == 0) {
+    writeReply = () => {
+      console.log("Hi");
+      const { TextArea } = Input;
+      return <TextArea rows={4} />
+    };
+      const { comments } = this.props.viewNews;
+      if (comments instanceof Array) {
+        if (comments.length == 0) {
         return <div>No Comments</div>;
       }
       const commentsA = comments.map(c => <Comment comment={c} />);
-      return <div className="comments">{commentsA}</div>;
+      const IconText = ({ type, text }) => (
+        <span>
+          <Icon type={type} style={{ marginRight: 8 }} />
+          {text}
+        </span>
+      );
+      
+
+      return <List
+      itemLayout="vertical"
+      size="large"
+      dataSource={commentsA}
+      renderItem={commentsA => (
+        <List.Item
+        
+          actions={[<IconText type="" text="" />, <IconText type="like-o" text="156" />, <IconText type="dislike-o" text="156" />, <Icon type="aliwangwang" onClick={this.writeReply} />]}
+
+      >
+          <List.Item.Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Amjad"
+            description={commentsA}
+          />
+        </List.Item>
+      )}
+    />
     }
     return <p />;
   };
-
+  
   render() {
     const { post } = this.props.viewNews;
     return (
@@ -378,7 +413,7 @@ export class ViewNews extends React.Component {
                 <h2 className="comment">Comments</h2>
 
                 <Row>
-                  <Col span={24}>{this.renderComments()}</Col>
+                  <Col span={24} style={{textAlign: "left"}}>{this.renderComments()}</Col>
                 </Row>
                 <Row>
                   <Col span={20}>
