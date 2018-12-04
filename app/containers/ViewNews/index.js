@@ -17,13 +17,14 @@ import { get } from 'lodash';
 import injectReducer from 'utils/injectReducer';
 import { Row, Col, Icon, Button, Form, List, Avatar, Input  } from 'antd';
 import styled from 'styled-components';
-import { fetchUser } from './api';
+import { fetchUser, commentsApi,fetchCommentReplies } from './api';
 import makeSelectGlobalState from '../App/selectors';
 import makeSelectViewNews from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import Header from '../Headerr/Loadable';
 import * as a from './actions';
+import { empty } from 'rxjs';
 const Wrapper = styled.div`
   margin: 20px auto;
   text-align: center;
@@ -47,6 +48,14 @@ const Wrapper = styled.div`
     margin-top: 50px;
   }
 `;
+
+const IconText = ({ type, text }) => (
+  <span>
+    <Icon type={type} style={{ marginRight: 8 }} />
+    {text}
+  </span>
+);
+
 const Sidebar = styled.div`
   border-left: 1px solid #eee;
   height: 600px;
@@ -59,12 +68,78 @@ const Sidebar = styled.div`
   }
 `;
 
+
+class Replyform extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      replyField: ''
+    }
+  }
+  publishComment = () => {
+    let commentID = get(this,'props.comment.id');
+  }
+  render() {
+    return (
+      <div>
+        <Row>
+          <Col span={20}>
+            <textarea
+              name="comment"
+              rows="3"
+              style={{height: '52px'}}
+              value={this.state.replyField}
+              onChange={e =>this.setState({ replyField: e.target.value })}
+              placeholder="Write ur reply here"
+            />
+          </Col>
+          <Col span={4}>
+            <Button
+              style={{width: '100%',height: '51px'}}
+              onClick={() => this.publishComment()}
+              type="primary"
+            >
+              Publish
+            </Button>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+}
+
+let emptyDiv = () => {
+  return <div></div>
+}
+
+class CommentReplies extends React.Component {
+  componentDidMount() {
+    let commentId = get(this,'props.comment.id',null);
+    this.fetchReplies(commentId);
+  }
+  async fetchReplies(commentId) {
+    try {
+      let response = await fetchCommentReplies(commentId);
+    } catch (e) {
+      console.log(1);
+    }
+  }
+  render() {
+    return (
+    <div>
+      asd
+    </div>
+    )
+  }
+}
+
 class Comment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       user: { email: '' },
-      currendUser: this.getName()
+      currendUser: this.getName(),
+      replyFormShow: false
     };
   }
 
@@ -94,15 +169,30 @@ class Comment extends React.Component {
     }
   };
 
-  render() {
+  componentDidMount() {
     const comment = get(this, 'props.comment', { comment: '' });
     this.fetchUser(comment.user);
+  }
+
+  render() {
+    const comment = get(this, 'props.comment', { comment: '' });
+    let ReplyContent = Replyform;
+    if (!this.state.replyFormShow) {
+      ReplyContent = emptyDiv
+    }
     return (
       <div>
-        <div style={{ margin: '5px 0' }} key={Math.random() * 10}>
-          {' '}
-          <b>{}</b> {comment.comment}
-        </div>
+        <List.Item
+          actions={[<IconText type="like-o" text="156" />, <IconText type="dislike-o" text="156" />, <Icon type="aliwangwang" onClick={() =>  this.setState({replyFormShow: !this.state.replyFormShow}) } />]}
+          >
+          <List.Item.Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Amjad"
+            description={'asdsad'}
+          />
+        </List.Item>
+        <CommentReplies comment={comment} />
+        <ReplyContent comment={comment} />
       </div>
     );
   }
@@ -213,7 +303,7 @@ export class ViewNews extends React.Component {
   
   
   renderComments = () => {
-    writeReply = () => {
+    let writeReply = () => {
       console.log("Hi");
       const { TextArea } = Input;
       return <TextArea rows={4} />
@@ -224,34 +314,22 @@ export class ViewNews extends React.Component {
         return <div>No Comments</div>;
       }
       const commentsA = comments.map(c => <Comment comment={c} />);
-      const IconText = ({ type, text }) => (
-        <span>
-          <Icon type={type} style={{ marginRight: 8 }} />
-          {text}
-        </span>
-      );
-      
-
-      return <List
-      itemLayout="vertical"
-      size="large"
-      dataSource={commentsA}
-      renderItem={commentsA => (
-        <List.Item
-        
-          actions={[<IconText type="" text="" />, <IconText type="like-o" text="156" />, <IconText type="dislike-o" text="156" />, <Icon type="aliwangwang" onClick={this.writeReply} />]}
-
-      >
-          <List.Item.Meta
-            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-            title="Amjad"
-            description={commentsA}
+      console.log(commentsA)
+      return (
+        <div>
+          <List
+            itemLayout="vertical"
+            size="large"
+            dataSource={commentsA}
+            renderItem={a => (
+              <div>
+                {a}
+              </div>
+            )}
           />
-        </List.Item>
-      )}
-    />
+        </div>
+      )
     }
-    return <p />;
   };
   
   render() {
