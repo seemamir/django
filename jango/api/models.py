@@ -32,17 +32,6 @@ class Post(models.Model):
   def __str__(self):
     return self.title
 
-
-class PostVote(models.Model):
-  post = models.ForeignKey(Post,on_delete=models.CASCADE)
-  user = models.ForeignKey(User,on_delete=models.CASCADE)
-  vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
-
-  def __str__(self):
-    return "Post {post} {vote_type}vote ".format(vote_type=self.vote_type,post=self.post)
-
-  class Meta:
-    unique_together = ('post','user')
   
 class Profile(models.Model):
   user = models.ForeignKey(User,on_delete=models.CASCADE,unique=True)
@@ -91,3 +80,15 @@ class ForgetPassword(models.Model):
   token = models.CharField(max_length=150)
   def __str__(self):
     return self.email;
+
+
+
+    
+
+class CommentVote(models.Model):
+  comment = models.ForeignKey(Comment,on_delete=models.CASCADE)
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
+
+  def __str__(self):
+    return "Comment {comment} {vote_type}vote ".format(vote_type=self.vote_type,comment=self.comment)

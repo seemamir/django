@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 from django.urls import path
 from rest_framework import routers
-from .views import PostViewSet, PostReactionViewSet, SavedPostViewSet, Login, Signup, ForgetPassword, UserViewSet, CommentViewSet, ProfileViewSet, ResetPassword, CommentReplyViewSet, PostVoteViewSet
+from .views import PostViewSet, PostReactionViewSet, SavedPostViewSet, Login, Signup, ForgetPassword, UserViewSet, CommentViewSet, ProfileViewSet, ResetPassword, CommentReplyViewSet, CommentVoteViewSet
 
 from django.conf.urls import url
  
@@ -12,7 +12,7 @@ router.register(r'saved-post', SavedPostViewSet)
 router.register(r'user', UserViewSet)
 router.register(r'comment', CommentViewSet)
 router.register(r'user-profile', ProfileViewSet)
-router.register(r'post-vote', PostVoteViewSet)
+router.register(r'comment-vote', CommentVoteViewSet)
 router.register(r'comment-reply', CommentReplyViewSet)
 
 urlpatterns = [

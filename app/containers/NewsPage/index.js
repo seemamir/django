@@ -81,9 +81,10 @@ export class NewsPage extends React.Component {
   componentDidMount() {
     this.props.reset()
     const userID = get(this, 'props.global.user.id', null);
-    // const { user } = this.props.global;
+    if (userID > 0) {
+      this.props.fetchProfile(userID);
+    }
     this.props.fetchPost(userID);
-    this.props.fetchProfile(userID);
     setTimeout(() => {
       this.setState({
         imageUrl: get(this.props, 'global.profile.image', ''),

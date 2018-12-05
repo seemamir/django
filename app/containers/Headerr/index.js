@@ -20,6 +20,7 @@ import { selectGlobal } from '../App/selectors';
 import Logo from '../../images/logo.png';
 import reducer from './reducer';
 import saga from './saga';
+import { fetchUser } from '../App/api.js';
 const { Header } = Layout;
 
 /* eslint-disable react/prefer-stateless-function */
@@ -37,17 +38,25 @@ export class Headerr extends React.Component {
 
   // this.props.history.push('/add-news');
   componentDidMount() {
-    setInterval(() => {
-      let a = localStorage.getItem('user');
-      if (a) {
-        a = JSON.parse(a);
-        const u = get(a, 'username', '');
-        const username = u.indexOf('@') > -1 ? u.split('@')[0] : '';
-        this.setState({
-          username,
-        });
-      }
-    }, 1500);
+    this.fetchUser();
+  }
+
+  fetchUser = async () => {
+    let email = localStorage.getItem('email');
+    try {
+      let response = await fetchUser(email);
+      let u = get(response,'data[0]',{});
+      this.setState({
+        user: u
+      })
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  logout = () => {
+    localStorage.clear();
+    this.props.history.push("/");
   }
 
   render() {
@@ -76,8 +85,9 @@ export class Headerr extends React.Component {
           <Link to="/home" className="logo-header">
             Home
           </Link>
-          <div onClick={this.handleRedirect} style={{ cursor: 'pointer' }}>
-            <strong>{this.state.username}</strong>
+          <div >
+            <strong onClick={this.handleRedirect} style={{ cursor: 'pointer',display: 'inline-block',marginRight: '20px' }} >{get(this,'state.user.username','')}</strong>
+            <strong onClick={this.logout} style={{ cursor: 'pointer',display: 'inline-block',marginRight: '20px' }} >Logout</strong>
           </div>
         </Header>
       </div>
