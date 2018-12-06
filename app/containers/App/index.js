@@ -45,11 +45,14 @@ export class App extends React.Component {
     return (
       <BrowserRouter>
         <div>
-
-          <Switch>
+          <Switch history={this.props.history}>
             <Route path="/view/:id" component={ViewNews} />
             <Route path="/home" component={Home} />
-            <Route path="/news-page" component={NewsPage} />
+            <Route
+              path="/news-page"
+              component={NewsPage}
+              history={this.props.history}
+            />
             <Route path="/add-news" component={AddNews} />
             <Route path="/signup" component={Signup} />
             <Route path="/reset-password" component={ResetPassword} />

@@ -41,6 +41,17 @@ const GlobalStyle = createGlobalStyle`
     margin-top:20px;
     border-color:red;
   }
+  .primary-btn{
+    background:#40a9ff;
+    color:white;
+    margin-top:20px;
+    padding:6px 12px;
+    border-radius: 4px;
+    border-color:red;
+    :hover{
+      color: white
+    }
+  }
  textarea{
    border: 1px solid #eee;
    width: 100%;

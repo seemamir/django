@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import {Link} from "react-router-dom"
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Row, Col, Card, Alert, Icon, message, Button, Input } from 'antd';
+import { Row, Col, Card, Alert, message, Button, Input } from 'antd';
 import { get } from 'lodash';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -44,7 +45,10 @@ class SavedPostView extends React.Component {
     await deleteSavedPost(id);
     this.props.reload();
   };
-
+  handleViewRedirect = (id) => {
+    console.log(this.props.history)
+    this.props.history.push(`/view/${id}`);
+  }
   render() {
     const item = this.props.item;
     const title = get(this, 'state.post.title', '');
@@ -56,12 +60,15 @@ class SavedPostView extends React.Component {
         cover={<img alt="example" src={image} />}
       >
         <h3>{title}</h3>
-        <button
+        <Button
           onClick={() => this.deleteSavedPost(item.id)}
           className="danger-btn"
+          style={{marginRight: "5px"}}
         >
           Delete
-        </button>
+        </Button>
+        <Link to={`/view/${item.id}`} className="primary-btn">View</Link>
+      
       </Card>
     );
   }
