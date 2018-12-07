@@ -155,7 +155,27 @@ class CommentReplyItem extends React.Component {
 
   render() {
     return (
-      <List.Item>
+ 
+        <List.Item
+          actions={[
+            <IconText
+              onClick={() => this.vote('UP_VOTE')}
+              type="like-o"
+              text={this.state.totalUpvotes}
+            />,
+            <IconText
+              onClick={() => this.vote('DOWN_VOTE')}
+              type="dislike-o"
+              text={this.state.totalDownvotes}
+            />,
+            <Icon
+              type="aliwangwang"
+              onClick={() =>
+                this.setState({ replyFormShow: !this.state.replyFormShow })
+              }
+            />,
+          ]}
+        >
         <List.Item.Meta
           avatar={<Link to="/news-page"><Avatar src={get(this, 'state.user.image', '')} /></Link>}
           title={

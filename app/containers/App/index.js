@@ -17,6 +17,7 @@ import Signup from 'containers/Signup/Loadable';
 import Home from 'containers/Home/Loadable';
 import Footer from 'components/Footer/Loadable';
 import NewsPage from 'containers/NewsPage/Loadable';
+import Profile from 'containers/NewsPage/profile';
 import ViewNews from 'containers/ViewNews/Loadable';
 import AddNews from 'containers/AddNews/Loadable';
 import ResetPassword from 'containers/ResetPassword/Loadable';
@@ -24,7 +25,6 @@ import SocialLoginDone from 'containers/SocialLoginDone/Loadable';
 import { compose } from 'redux';
 import ForgetPassword from 'containers/ForgetPassword/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import Header from 'containers/Headerr/Loadable';
 import { createStructuredSelector } from 'reselect';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -54,6 +54,7 @@ export class App extends React.Component {
               history={this.props.history}
             />
             <Route path="/add-news" component={AddNews} />
+            <Route path="/profile" component={Profile} />
             <Route path="/signup" component={Signup} />
             <Route path="/reset-password" component={ResetPassword} />
             <Route path="/forget-password" component={ForgetPassword} />
