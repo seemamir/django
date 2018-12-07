@@ -48,7 +48,7 @@ class PostReaction(models.Model):
   def __str__(self):
     return "Post reaction"
   class Meta:
-    unique_together = ('post','reaction_type','user')
+    unique_together = ('post','user')
 
 class SavedPost(models.Model):
   post = models.ForeignKey('api.Post',on_delete=models.CASCADE)
@@ -88,12 +88,18 @@ class ReplyVote(models.Model):
   vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
   def __str__(self):
     return "A vote by {user} on reply {reply} type {type}".format(user=self.user,reply=self.reply,type=self.vote_type)
+    
+  class Meta:
+    unique_together = ('reply','user')
 
 
 class CommentVote(models.Model):
   comment = models.ForeignKey(Comment,on_delete=models.CASCADE)
   user = models.ForeignKey(User,on_delete=models.CASCADE)
   vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
+  
+  class Meta:
+    unique_together = ('comment','user')
 
   def __str__(self):
     return "Comment {comment} {vote_type}vote ".format(vote_type=self.vote_type,comment=self.comment)

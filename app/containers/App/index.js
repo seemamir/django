@@ -45,21 +45,20 @@ export class App extends React.Component {
     return (
       <BrowserRouter>
         <div>
-          <Switch history={this.props.history}>
-            <Route path="/view/:id" component={ViewNews} />
-            <Route path="/home" component={Home} />
+          <Switch>
             <Route
               path="/news-page"
               component={NewsPage}
-              history={this.props.history}
             />
+            <Route path="/view/:id" component={ViewNews} />
+            <Route path="/home" component={Home} />
             <Route path="/add-news" component={AddNews} />
-            <Route path="/profile" component={Profile} />
+            <Route path="/profile/:id" component={Profile} />
             <Route path="/signup" component={Signup} />
             <Route path="/reset-password" component={ResetPassword} />
             <Route path="/forget-password" component={ForgetPassword} />
             <Route path="/social-login-done" component={SocialLoginDone} />
-            <Route path="/" component={Login} />
+            <Route exact path="/" component={Login} />
             <Route component={NotFoundPage} />
           </Switch>
           <GlobalStyle />
