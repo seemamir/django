@@ -177,9 +177,9 @@ class CommentReplyItem extends React.Component {
           ]}
         >
         <List.Item.Meta
-          avatar={<Link to="/news-page"><Avatar src={get(this, 'state.user.image', '')} /></Link>}
+          avatar={<Link to="/profile"><Avatar src={get(this, 'state.user.image', '')} /></Link>}
           title={
-            <Link to="/news-page">{get(this, 'state.user.name', '')}</Link>
+            <Link to="/profile">{get(this, 'state.user.name', '')}</Link>
           }
           description={get(this, 'props.item.reply', '')}
         />
@@ -333,9 +333,9 @@ class Comment extends React.Component {
           ]}
         >
           <List.Item.Meta
-            avatar={<Link to="/news-page"><Avatar src={get(this, 'state.user.image', '')} /></Link>}
+            avatar={<Link to="/profile"><Avatar src={get(this, 'state.user.image', '')} /></Link>}
             title={
-              <Link to="/news-page">{get(this, 'state.user.name', '')}</Link>
+              <Link to="/profile">{get(this, 'state.user.name', '')}</Link>
             }
             description={comment.comment}
           />
