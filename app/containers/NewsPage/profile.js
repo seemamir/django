@@ -14,7 +14,7 @@ import reducer from './reducer';
 import saga from './saga';
 import Header from '../Headerr/Loadable';
 import * as a from './actions';
-import { fetchSinglePost } from './api';
+import { fetchSinglePost, fetchProfile } from './api';
 
 /* eslint-disable react/prefer-stateless-function */
 class SavedPostView extends React.Component {
@@ -75,20 +75,24 @@ export class Profile extends React.Component {
     };
   }
 
+  fetch = async (userID) => {
+    console.log(fetchProfile)
+    try {
+      let res = await fetchProfile(userID);
+      let data = get(res,'data[0]',{});
+      this.setState({
+        user: data
+      });
+
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
   componentDidMount() {
     this.props.reset();
-    const userID = get(this, 'props.global.user.id', null);
-    if (userID > 0) {
-      this.props.fetchProfile(userID);
-    }
-    this.props.fetchPost(userID);
-    setTimeout(() => {
-      this.setState({
-        imageUrl: get(this.props, 'global.profile.image', ''),
-        bio: get(this.props, 'global.profile.bio', ''),
-        name: get(this.props, 'global.profile.name', ''),
-      });
-    }, 1500);
+    const userID = get(this, 'props.match.params.id', null);
+    this.fetch(userID)
   }
 
   getBase64 = (img, callback) => {
@@ -146,22 +150,19 @@ export class Profile extends React.Component {
   };
 
   render() {
-    let image = <span />;
-    if (this.state.imageUrl) {
-      image = (
-        <img
-          style={{
-            height: '120px',
-            width: '120px',
-            display: 'block',
-            margin: 'auto',
-            marginBottom: '20px',
-            borderRadius: '50%',
-          }}
-          src={this.state.imageUrl}
-        />
-      );
-    }
+    let image = (
+      <img
+        style={{
+          height: '120px',
+          width: '120px',
+          display: 'block',
+          margin: 'auto',
+          marginBottom: '20px',
+          borderRadius: '50%',
+        }}
+        src={get(this,'state.user.image','')}
+      />
+    )
     return (
       <div>
         <Helmet>
@@ -176,19 +177,13 @@ export class Profile extends React.Component {
               <Card style={{ marginRight: '20px', textAlign: 'center' }}>
                 <div>
                   {image}
-                  <input
-                    style={{ display: 'none' }}
-                    className="one-upload-thumbnail"
-                    onChange={e => this.handleFileUpload(e, 'imageUrl')}
-                    type="file"
-                  />
                 </div>
               </Card>
             </Col>
             <Col span={14}>
               <Card>
-                <h3>{this.state.name}</h3>
-                <p>{this.state.bio}</p>
+                <h3>{get(this,'state.user.name','')}</h3>
+                <p>{get(this,'state.user.bio','')}</p>
               </Card>
             </Col>
           </Row>
