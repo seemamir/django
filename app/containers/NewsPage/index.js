@@ -67,7 +67,7 @@ class SavedPostView extends React.Component {
         >
           Delete
         </Button>
-        <Link to={`/view/${item.id}`} className="primary-btn">View</Link>
+        <Link to={`/view/${item.post}`} className="primary-btn">View</Link>
       
       </Card>
     );
