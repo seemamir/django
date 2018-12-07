@@ -252,10 +252,18 @@ class Comment extends React.Component {
 
   fetchUser = async uid => {
     try {
-      const id = get(this, 'state.user.id', null);
-      if (!id) {
-        const response1 = await fetchProfile(uid);
-        const user = get(response1, 'data[0]', {});
+      const response1 = await fetchProfile(uid);
+      const user = get(response1, 'data[0]', {empty: true});
+      const empty = get(user,'empty',false)
+      if (empty) {
+        let user = localStorage.getItem('email');
+        const index = user.indexOf('@');
+        this.setState({
+          user: {
+            name: (index>0) ? user.split("@")[0] : name
+          }
+        })
+      }else {
         this.setState({
           user,
         });

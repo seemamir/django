@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-
-
 VOTE_TYPE_CHOICES = (
   ('DOWN_VOTE', 'Down vote'),
   ('UP_VOTE', 'Up vote'),
@@ -40,7 +38,7 @@ class Profile(models.Model):
   name = models.CharField(blank=True,max_length=150)
   
   def __str__(self):
-    return "Post reaction"
+    return "Profile for {name}".format(name=self.name)
 
 class PostReaction(models.Model):
   post = models.ForeignKey('api.Post',on_delete=models.CASCADE)
@@ -83,7 +81,14 @@ class ForgetPassword(models.Model):
 
 
 
-    
+
+class ReplyVote(models.Model):
+  reply = models.ForeignKey(CommentReply,on_delete=models.CASCADE)
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
+  def __str__(self):
+    return "A vote by {user} on reply {reply} type {type}".format(user=self.user,reply=self.reply,type=self.vote_type)
+
 
 class CommentVote(models.Model):
   comment = models.ForeignKey(Comment,on_delete=models.CASCADE)
