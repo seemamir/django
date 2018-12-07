@@ -15,17 +15,9 @@ import injectSaga from 'utils/injectSaga';
 import { get } from 'lodash';
 
 import injectReducer from 'utils/injectReducer';
-import { Row, Col, Icon, Button, Form, List, Avatar, Input } from 'antd';
+import { Row, Col, Icon, Button, Form, List, Avatar, Input  } from 'antd';
 import styled from 'styled-components';
-import { empty } from 'rxjs';
-import {
-  fetchUser,
-  postCommentReply,
-  fetchCommentReplies,
-  fetchProfile,
-  fetchCommentVotes,
-  postCommentVote,
-} from './api';
+import { fetchUser } from './api';
 import makeSelectGlobalState from '../App/selectors';
 import makeSelectViewNews from './selectors';
 import reducer from './reducer';
@@ -55,14 +47,6 @@ const Wrapper = styled.div`
     margin-top: 50px;
   }
 `;
-
-const IconText = ({ type, text, onClick }) => (
-  <span onClick={onClick}>
-    <Icon type={type} style={{ marginRight: 8 }} />
-    {text}
-  </span>
-);
-
 const Sidebar = styled.div`
   border-left: 1px solid #eee;
   height: 600px;
@@ -75,151 +59,14 @@ const Sidebar = styled.div`
   }
 `;
 
-class Replyform extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      replyField: '',
-    };
-  }
-
-  publishReply = async () => {
-    let user = localStorage.getItem('user');
-    user = JSON.parse(user);
-    const userID = get(user, 'id', null);
-    const commentID = get(this, 'props.comment.id');
-    const reply = this.state.replyField;
-    const object = { user: userID, comment: commentID, reply };
-    await postCommentReply(object);
-    this.setState({ replyField: '' });
-    this.props.fetchReplies();
-  };
-
-  render() {
-    return (
-      <div>
-        <Row>
-          <Col span={10}>
-            <textarea
-              name="comment"
-              rows="3"
-              style={{ height: '52px', marginTop: "20px" }}
-              value={this.state.replyField}
-              onChange={e => this.setState({ replyField: e.target.value })}
-              placeholder="Write ur reply here"
-            />
-          </Col>
-          <Col span={4}>
-            <Button
-              style={{ marginTop: "20px", marginLeft: "20px"}}
-              onClick={() => this.publishReply()}
-              type="primary"
-            >
-              Publish
-            </Button>
-          </Col>
-        </Row>
-      </div>
-    );
-  }
-}
-
-const emptyDiv = () => <div />;
-
-class CommentReplyItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: {},
-    };
-  }
-
-  componentDidMount() {
-    this.fetchUser();
-  }
-
-  fetchUser = async () => {
-    try {
-      const id = get(this, 'props.item.user', null);
-      if (id > 0) {
-        const response = await fetchProfile(id);
-        const user = get(response, 'data[0]', {});
-        this.setState({
-          user,
-        });
-      }
-    } catch (e) {
-      console.log(e.message);
-    }
-  };
-
-  render() {
-    return (
-      <List.Item>
-        <List.Item.Meta
-          avatar={<Avatar src={get(this, 'state.user.image', '')} />}
-          title={
-            <a href="https://ant.design">{get(this, 'state.user.name', '')}</a>
-          }
-          description={get(this, 'props.item.reply', '')}
-        />
-      </List.Item>
-    );
-  }
-}
-
-class CommentReplies extends React.Component {
-  renderReplies = () => {
-    const replies = get(this, 'props.replies', []);
-
-    if (replies.length == 0) {
-      return <div />;
-    }
-    return (
-      <div style={{ paddingLeft: '50px' }}>
-        <List
-          itemLayout="horizontal"
-          dataSource={replies}
-          pagination={replies.length > 10}
-          emptyText=""
-          renderItem={item => <CommentReplyItem item={item} />}
-        />
-      </div>
-    );
-  };
-
-  render() {
-    return <div>{this.renderReplies()}</div>;
-  }
-}
-
 class Comment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       user: { email: '' },
-      currendUser: this.getName(),
-      replyFormShow: false,
-      replies: [],
-      totalUpvotes: 0,
-      totalDownvotes: 0,
+      currendUser: this.getName()
     };
   }
-
-  fetchVotes = async commentID => {
-    if (commentID > 0) {
-      try {
-        const response = await fetchCommentVotes(commentID);
-        const votes = get(response, 'data', []);
-        const upvotes = votes.filter(c => c.vote_type == 'UP_VOTE');
-        const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
-        this.setState({ totalUpvotes: upvotes.length });
-        this.setState({ totalDownvotes: downvotes.length });
-      } catch (e) {
-        console.log(e.message);
-      }
-    }
-  };
 
   getName = () => {
     const name = get(this, 'state.user.username', '');
@@ -230,12 +77,14 @@ class Comment extends React.Component {
     return name;
   };
 
+
+
   fetchUser = async uid => {
     try {
       const id = get(this, 'state.user.id', null);
       if (!id) {
-        const response1 = await fetchProfile(uid);
-        const user = get(response1, 'data[0]', {});
+        const response = await fetchUser(uid);
+        const user = get(response, 'data', {});
         this.setState({
           user,
         });
@@ -245,76 +94,15 @@ class Comment extends React.Component {
     }
   };
 
-  componentDidMount() {
-    const comment = get(this, 'props.comment', { comment: '' });
-    this.fetchUser(comment.user);
-    this.fetchVotes(comment.id);
-  }
-
-  fetchReplies = async () => {
-    const commentID = get(this, 'props.comment.id', null);
-    if (commentID) {
-      const response = await fetchCommentReplies(commentID);
-      const data = get(response, 'data', []);
-      this.setState({
-        replies: data,
-      });
-    }
-  };
-
-  vote = async type => {
-    const commentID = get(this, 'props.comment.id', null);
-    const user = JSON.parse(localStorage.getItem('user')) || {};
-    const userID = get(user, 'id', null);
-    if (commentID > 0 && userID > 0) {
-      await postCommentVote({
-        comment: commentID,
-        vote_type: type,
-        user: userID,
-      });
-      this.fetchVotes(commentID);
-    }
-  };
-
   render() {
     const comment = get(this, 'props.comment', { comment: '' });
-    let ReplyContent = Replyform;
-    if (!this.state.replyFormShow) {
-      ReplyContent = emptyDiv;
-    }
+    this.fetchUser(comment.user);
     return (
-      <div style={{width: "80%"}}>
-        <List.Item
-          actions={[
-            <IconText
-              onClick={() => this.vote('UP_VOTE')}
-              type="like-o"
-              text={this.state.totalUpvotes}
-            />,
-            <IconText
-              onClick={() => this.vote('DOWN_VOTE')}
-              type="dislike-o"
-              text={this.state.totalDownvotes}
-            />,
-            <Icon
-              type="aliwangwang"
-              onClick={() =>
-                this.setState({ replyFormShow: !this.state.replyFormShow })
-              }
-            />,
-          ]}
-        >
-          <List.Item.Meta
-            avatar={<Avatar src={get(this, 'state.user.image', '')} />}
-            title={get(this, 'state.user.name', '')}
-            description={comment.comment}
-          />
-        </List.Item>
-        <CommentReplies replies={this.state.replies} comment={comment} />
-        <ReplyContent
-          comment={comment}
-          fetchReplies={() => this.fetchReplies()}
-        />
+      <div>
+        <div style={{ margin: '5px 0' }} key={Math.random() * 10}>
+          {' '}
+          <b>{}</b> {comment.comment}
+        </div>
       </div>
     );
   }
@@ -373,17 +161,18 @@ export class ViewNews extends React.Component {
     this.props.viewPost(id);
     this.props.fetchPostComments(id);
     this.props.getPostReactions(id);
+
     setTimeout(() => this.filterPostReactions(), 1000);
   }
 
   componentWillUnmount() {
     this.props.unmount();
   }
-
+  
   handleRedirect = () => {
     this.props.history.push('/news-page');
   };
-
+  
   publishComment = () => {
     const { id } = this.props.match.params;
     const {
@@ -404,14 +193,14 @@ export class ViewNews extends React.Component {
       }, 500);
     }
   };
-
+  
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({
       [name]: value,
     });
   };
-
+  
   handleSave = () => {
     const { id } = this.props.match.params;
     const payload = {
@@ -420,31 +209,51 @@ export class ViewNews extends React.Component {
     };
     this.props.saveAsSavedPost(payload);
   };
-
+  
+  
+  writeReply = () => {
+    console.log("Hi");
+    const { TextArea } = Input;
+    return <TextArea rows={4} />
+  };
+  
   renderComments = () => {
-    const writeReply = () => {
-      const { TextArea } = Input;
-      return <TextArea rows={4} />;
-    };
     const { comments } = this.props.viewNews;
     if (comments instanceof Array) {
-      if (comments.length == 0) {
+        if (comments.length == 0) {
         return <div>No Comments</div>;
       }
       const commentsA = comments.map(c => <Comment comment={c} />);
-      return (
-        <div>
-          <List
-            itemLayout="vertical"
-            size="large"
-            dataSource={commentsA}
-            renderItem={a => <div>{a}</div>}
-          />
-        </div>
+      const IconText = ({ type, text }) => (
+        <span>
+          <Icon type={type} style={{ marginRight: 8 }} />
+          {text}
+        </span>
       );
-    }
-  };
+      
 
+      return <List
+      itemLayout="vertical"
+      size="large"
+      dataSource={commentsA}
+      renderItem={commentsA => (
+        <List.Item
+        
+          actions={[<IconText type="" text="" />, <IconText type="like-o" text="156" />, <IconText type="dislike-o" text="156" />, <Icon type="aliwangwang" onClick={this.writeReply} />]}
+
+      >
+          <List.Item.Meta
+            avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+            title="Amjad"
+            description={commentsA}
+          />
+        </List.Item>
+      )}
+    />
+    }
+    return <p />;
+  };
+  
   render() {
     const { post } = this.props.viewNews;
     return (
@@ -482,7 +291,7 @@ export class ViewNews extends React.Component {
                   <Row>
                     <Col span={12} offset={6}>
                       <div className="main-sentence">
-                        <h2>Main Sentence</h2>
+                
                         <p className="view-sentences">{post.main_sentence}</p>
                       </div>
                     </Col>
@@ -604,9 +413,7 @@ export class ViewNews extends React.Component {
                 <h2 className="comment">Comments</h2>
 
                 <Row>
-                  <Col span={24} style={{ textAlign: 'left' }}>
-                    {this.renderComments()}
-                  </Col>
+                  <Col span={24} style={{textAlign: "left"}}>{this.renderComments()}</Col>
                 </Row>
                 <Row>
                   <Col span={20}>

@@ -132,6 +132,7 @@ const GlobalStyle = createGlobalStyle`
         text-align: left;
         margin-top:10px;
       }
+     
       .login-form-button {
         width: 100%;
         .anticon svg{

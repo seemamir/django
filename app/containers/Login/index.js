@@ -15,6 +15,8 @@ import saga from './saga';
 import SocialIcon from '../../components/SocialIcon/Loadable';
 import * as a from './actions';
 import { setEmail, fetchUser} from "../App/actions"
+import Fb from "../../images/fb.svg"
+import LinkedIn from "../../images/linkedIn.svg"
 const FormItem = Form.Item;
 /* eslint-disable react/prefer-stateless-function */
 export class Login extends React.Component {
@@ -256,7 +258,7 @@ export class Login extends React.Component {
                   response.status &&
                   response.status !== 200 && (
                     <Alert
-                      message="Invalid credentials"
+                      message="Unable to log in with provided credentials."
                       type="error"
                       showIcon
                     />
@@ -279,9 +281,8 @@ export class Login extends React.Component {
                     <SocialIcon
                       style={{ cursor: 'pointer' }}
                       onClick={() => this.facebookLogin()}
-                      icon="facebook"
                       color="#3F51B5"
-                    />
+                    ><img src={Fb} alt="facebook" width="14px" height="14 px" style={{marginTop: "-5px"}}/></SocialIcon>
                     <SocialIcon
                       style={{ cursor: 'pointer' }}
                       onClick={() => this.googleLogin()}
@@ -291,9 +292,9 @@ export class Login extends React.Component {
                     <SocialIcon
                       style={{ cursor: 'pointer' }}
                       onClick={() => this.linkedInLogin()}
-                      icon="linkedin"
-                      color="#546E7A"
-                    />
+                      color= "#546E7A"
+                      className="linkedIn"
+                    ><img src={LinkedIn} alt="LinkedIn" width="14px" height="14 px" style={{marginTop: "-5px"}}/></SocialIcon>
                   </div>
                   <div className="content-divider ">
                     <span>Don't have account?</span>

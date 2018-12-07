@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Form, Icon, Input, Button, Row, Col, Alert } from 'antd';
+import { Form, Icon, Input, Button, Row, Col, Alert, notification } from 'antd';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import makeSelectSignup from './selectors';
@@ -32,9 +32,12 @@ export class Signup extends React.Component {
     });
     setTimeout(() => {
       const { response } = this.props.signup;
-      console.log(this.props.signup)
       if (response && response.status && response.status === 201) {
-        this.props.history.push('/');
+          notification["success"]({
+            message: 'Account created',
+            description: 'Your account has been created successfuly. ',
+          });
+          this.props.history.push('/');
       }
     }, 3000);
   };
@@ -142,6 +145,7 @@ export class Signup extends React.Component {
                       showIcon
                     />
                   )}
+                
                 <FormItem>
                   <Button
                     type="primary"

@@ -28,6 +28,7 @@ const SocialIcon = props => {
   return (
     <Wrapper {...props}>
       <Icon type={icon} />
+      {props.children}
     </Wrapper>
   );
 };
