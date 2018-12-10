@@ -27,7 +27,12 @@ import {
   fetchCommentVotes,
   postCommentVote,
   postReplyVote,
-  fetchReplyVotes
+  fetchReplyVotes,
+  patchReplyVote,
+  deleteReplyVote,
+  deletecomment,
+  patchCommentVote,
+  deleteCommentVote
 } from './api';
 import makeSelectGlobalState from '../App/selectors';
 import makeSelectViewNews from './selectors';
@@ -135,6 +140,7 @@ class CommentReplyItem extends React.Component {
     this.state = {
       user: {},
       totalUpvotes: 0,
+      votes: [],
       totalDownvotes: 0,
     };
   }
@@ -144,19 +150,39 @@ class CommentReplyItem extends React.Component {
     this.fetchVotes(this.props.item.id);
   }
 
-  async vote(type) {
+  checkVote = async (type) => {
     const replyId = get(this, 'props.item.id', null);
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    
-    if (replyId > 0 && userID > 0) {
-      await postReplyVote({
-        reply: replyId,
-        vote_type: type,
-        user: userID,
-      });
-      this.fetchVotes(replyId);
+    let filter = this.state.votes.filter((c) => c.user == userID );
+    let totalFiltered = get(filter,'length',0)
+    let currentVote = get(filter,'[0]',{});
+    if (totalFiltered > 0) {
+      let currentVoteType = get(currentVote,'vote_type','');
+      if (currentVoteType == type) {
+        await deleteReplyVote(currentVote.id);
+      }else {
+        // updatePost
+        currentVote.vote_type = type;
+        await patchReplyVote(currentVote);
+      }
+    }else {
+      const user = JSON.parse(localStorage.getItem('user')) || {};
+      const userID = get(user, 'id', null);
+      
+      if (replyId > 0 && userID > 0) {
+        await postReplyVote({
+          reply: replyId,
+          vote_type: type,
+          user: userID,
+        });
+      }
     }
+    this.fetchVotes(replyId);
+  }
+
+  async vote(type) {
+    this.checkVote(type);
   }
 
   handleRedirect = () => {
@@ -182,6 +208,7 @@ class CommentReplyItem extends React.Component {
         const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
         this.setState({ totalUpvotes: upvotes.length });
         this.setState({ totalDownvotes: downvotes.length });
+        this.setState({ votes: votes });
       } catch (e) {
         console.log(e.message);
       }
@@ -270,6 +297,7 @@ class Comment extends React.Component {
       replies: [],
       totalUpvotes: 0,
       totalDownvotes: 0,
+      votes: []
     };
   }
 
@@ -282,6 +310,7 @@ class Comment extends React.Component {
         const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
         this.setState({ totalUpvotes: upvotes.length });
         this.setState({ totalDownvotes: downvotes.length });
+        this.setState({ votes: votes });
       } catch (e) {
         console.log(e.message);
       }
@@ -342,18 +371,50 @@ class Comment extends React.Component {
     }
   };
 
-  vote = async type => {
+  check = async (type) => {
     const commentID = get(this, 'props.comment.id', null);
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    if (commentID > 0 && userID > 0) {
-      await postCommentVote({
-        comment: commentID,
-        vote_type: type,
-        user: userID,
-      });
-      this.fetchVotes(commentID);
+    let filter = this.state.votes.filter((c) => c.user == userID );
+    let totalFiltered = get(filter,'length',0)
+    let currentVote = get(filter,'[0]',{});
+    if (totalFiltered > 0) {
+      let currentVoteType = get(currentVote,'vote_type','');
+      if (currentVoteType == type) {
+        await deleteCommentVote(currentVote.id);
+      }else {
+        // updatePost
+        currentVote.vote_type = type;
+        await patchCommentVote(currentVote);
+      }
+    }else {
+      const user = JSON.parse(localStorage.getItem('user')) || {};
+      const userID = get(user, 'id', null);
+      
+      if (commentID > 0 && userID > 0) {
+        await postCommentVote({
+          comment: commentID,
+          vote_type: type,
+          user: userID,
+        });
+      }
     }
+    this.fetchVotes(commentID);
+  }
+
+  vote = async type => {
+    this.check(type);
+    // const commentID = get(this, 'props.comment.id', null);
+    // const user = JSON.parse(localStorage.getItem('user')) || {};
+    // const userID = get(user, 'id', null);
+    // if (commentID > 0 && userID > 0) {
+    //   await postCommentVote({
+    //     comment: commentID,
+    //     vote_type: type,
+    //     user: userID,
+    //   });
+    //   this.fetchVotes(commentID);
+    // }
   };
 
   render() {

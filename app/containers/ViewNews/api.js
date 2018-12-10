@@ -16,7 +16,11 @@ export const fetchCommentReplies = commentID =>
   axios.get(`/api/comment-reply/?comment=${commentID}`);
 export const postCommentReply = data => axios.post(`/api/comment-reply/`, data);
 export const postCommentVote = data => axios.post(`/api/comment-vote/`, data);
+export const patchCommentVote = data => axios.patch(`/api/comment-vote/${data.id}/`, data);
+export const deleteCommentVote = id => axios.delete(`/api/comment-vote/${id}`);
 export const postReplyVote = data => axios.post(`/api/reply-vote/`, data);
+export const patchReplyVote = data => axios.patch(`/api/reply-vote/${data.id}/`, data);
+export const deleteReplyVote = id => axios.delete(`/api/reply-vote/${id}/`);
 export const fetchCommentVotes = commentID =>
   axios.get(`/api/comment-vote/?comment=${commentID}`);
 export const fetchReplyVotes = replyID =>
