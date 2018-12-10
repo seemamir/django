@@ -48,11 +48,10 @@ export class Login extends React.Component {
         this.props.createAccount(a);
         setTimeout(() => {
           const { response } = this.props.login;
-    
           if (response && response.status && response.status === 200) {
-    
             localStorage.setItem('email', a.email);
             this.props.history.push('/home');
+            window.location.reload();
           }
         }, 1000);
       }
