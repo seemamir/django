@@ -15,8 +15,10 @@ import saga from './saga';
 import SocialIcon from '../../components/SocialIcon/Loadable';
 import * as a from './actions';
 import { setEmail, fetchUser} from "../App/actions"
-import Fb from "../../images/fb.svg"
-import LinkedIn from "../../images/linkedIn.svg"
+import Fb from "../../images/fb.svg";
+import {userWithEmail} from "./api.js";
+import LinkedIn from "../../images/linkedIn.svg";
+import {get} from "lodash";
 const FormItem = Form.Item;
 /* eslint-disable react/prefer-stateless-function */
 export class Login extends React.Component {
@@ -32,19 +34,32 @@ export class Login extends React.Component {
     this.props.history.push('/signup');
   };
 
-  prepareLogin(a) {
-    a.username = a.email;
-    a.password1 = a.password2 = a.password = 'socialpassword/12345';
-    this.props.createAccount(a);
-    setTimeout(() => {
-      const { response } = this.props.login;
-
-      if (response && response.status && response.status === 200) {
-
+  prepareLogin = async (a) => {
+    try {
+      let response = await userWithEmail(a.email);
+      let user = get(response,'data[0]',0)
+      if (user != 0) {
         localStorage.setItem('email', a.email);
         this.props.history.push('/home');
+        window.location.reload();
+      }else {
+        a.username = a.email;
+        a.password1 = a.password2 = a.password = 'socialpassword/12345';
+        this.props.createAccount(a);
+        setTimeout(() => {
+          const { response } = this.props.login;
+    
+          if (response && response.status && response.status === 200) {
+    
+            localStorage.setItem('email', a.email);
+            this.props.history.push('/home');
+          }
+        }, 1000);
       }
-    }, 1000);
+    } catch (e) {
+      console.log(e);
+    }
+    
   }
 
   handleSubmit = e => {
