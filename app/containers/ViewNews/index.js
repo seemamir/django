@@ -32,6 +32,8 @@ import {
   deleteReplyVote,
   deletecomment,
   patchCommentVote,
+  patchPostReaction,
+  deletePostReaction,
   deleteCommentVote
 } from './api';
 import makeSelectGlobalState from '../App/selectors';
@@ -481,22 +483,42 @@ export class ViewNews extends React.Component {
     };
   }
 
-  postReaction = type => {
+  postReaction = async type => {
+    let allReactions = get(this,'props.viewNews.postReactions',[]);
     const { id } = this.props.globalState.user;
-    const postId = parseInt(get(this, 'props.match.params.id', null));
     const userId = id;
-    const data = {
-      post: postId,
-      user: userId,
-      reaction_type: type,
-    };
-    this.props.setPostReaction(data);
-    setTimeout(() => {
-      this.props.getPostReactions(postId);
-    }, 500);
-    setTimeout(() => {
-      this.filterPostReactions();
-    }, 1000);
+    const postId = parseInt(get(this, 'props.match.params.id', null));
+    let filter = allReactions.filter((c) => c.user == userId );
+    let length = get(filter,'length',0);
+    if (length > 0) {
+      let currentReaction = get(filter,'[0]',null)
+      if (type == currentReaction.reaction_type) {
+        await deletePostReaction(currentReaction.id);
+      }else {
+        currentReaction.reaction_type = type;
+        await patchPostReaction(currentReaction);
+      }
+      console.log(currentReaction,type)
+      setTimeout(() => {
+        this.props.getPostReactions(postId);
+      }, 500);
+      setTimeout(() => {
+        this.filterPostReactions();
+      }, 1000);
+    }else {
+      const data = {
+        post: postId,
+        user: userId,
+        reaction_type: type,
+      };
+      this.props.setPostReaction(data);
+      setTimeout(() => {
+        this.props.getPostReactions(postId);
+      }, 500);
+      setTimeout(() => {
+        this.filterPostReactions();
+      }, 1000);
+    }
   };
 
   filterPostReactions = () => {
