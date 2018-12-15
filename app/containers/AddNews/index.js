@@ -222,6 +222,16 @@ componentDidMount(){
                       />,
                     )}
                   </FormItem>
+                  <FormItem label="Sentence" {...formItemLayout}>
+                    {getFieldDecorator('sentence5', {
+                      rules: [],
+                    })(
+                      <TextArea
+                        type="text"
+                        placeholder="Please write something here"
+                      />,
+                    )}
+                  </FormItem>
                   <FormItem label="People" {...formItemLayout}>
                     {getFieldDecorator('people1', {
                       rules: [
@@ -302,9 +312,9 @@ componentDidMount(){
                   </FormItem>
                   {response &&
                     response.status &&
-                    response.status !== 200 && (
+                    response.status !== 201 && (
                       <Alert
-                        message="Something went wront with server please try again!"
+                        message="Something went wrong with server please try again!"
                         type="error"
                         showIcon
                         style={{ marginTop: "20px", marginBottom: "0" }}

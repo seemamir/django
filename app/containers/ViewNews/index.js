@@ -196,7 +196,7 @@ class CommentReplyItem extends React.Component {
     if (userID == replyUserID) {
       history.push("/news-page")
     }else {
-      history.push(`/profile/${userID}`)
+      history.push(`/profile/${replyUserID}`)
     }
     
   }
@@ -329,7 +329,7 @@ class Comment extends React.Component {
     if (userID == commentUserID) {
       history.push("/news-page")
     }else {
-      history.push(`/profile/${userID}`)
+      history.push(`/profile/${commentUserID}`)
     }
     
   }
@@ -666,9 +666,10 @@ export class ViewNews extends React.Component {
                   </Row>
                   <Row>
                     <Col span={18} offset={3}>
-                        <p className="view-sentences">{post.author_description}</p>
+                        <p className="view-sentences">{post.sentence5}</p>
                     </Col>
                   </Row>
+                 
                   <Row>
                     <Col span={24}>
                       <Button

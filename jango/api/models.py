@@ -19,6 +19,7 @@ class Post(models.Model):
   sentence2 = models.TextField(blank=True)
   sentence3 = models.TextField(blank=True)
   sentence4 = models.TextField(blank=True)
+  sentence5 = models.TextField(blank=True)
   people1 = models.TextField(blank=True)
   people2 = models.TextField(blank=True)
   people3 = models.TextField(blank=True)
