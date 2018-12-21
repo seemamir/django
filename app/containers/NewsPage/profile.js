@@ -14,7 +14,7 @@ import reducer from './reducer';
 import saga from './saga';
 import Header from '../Headerr/Loadable';
 import * as a from './actions';
-import { fetchSinglePost, fetchProfile } from './api';
+import { fetchSinglePost, fetchProfile, fectSavedPosts } from './api';
 
 /* eslint-disable react/prefer-stateless-function */
 class SavedPostView extends React.Component {
@@ -26,6 +26,8 @@ class SavedPostView extends React.Component {
       loaded: false,
     };
   }
+
+
 
   fetchPost = async id => {
     try {
@@ -56,7 +58,7 @@ class SavedPostView extends React.Component {
       >
         <h3>{title}</h3>
 
-        <Link to={`/view/${item.id}`} className="primary-btn">
+        <Link to={`/view/${item.post}`} className="primary-btn">
           View
         </Link>
       </Card>
@@ -72,11 +74,23 @@ export class Profile extends React.Component {
       name: '',
       bio: '',
       renderedPosts: [],
+      savedPosts: [],
     };
   }
 
+  async fetchSavedPosts() {
+    try {
+      let response = await fectSavedPosts(this.props.match.params.id);
+      let posts = get(response,'data',[]);
+      this.setState({
+        savedPosts: posts
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   fetch = async (userID) => {
-    console.log(fetchProfile)
     try {
       let res = await fetchProfile(userID);
       let data = get(res,'data[0]',{});
@@ -92,7 +106,8 @@ export class Profile extends React.Component {
   componentDidMount() {
     this.props.reset();
     const userID = get(this, 'props.match.params.id', null);
-    this.fetch(userID)
+    this.fetch(userID);
+    this.fetchSavedPosts();
   }
 
   getBase64 = (img, callback) => {
@@ -126,7 +141,7 @@ export class Profile extends React.Component {
   };
 
   renderPosts = () => {
-    const posts = get(this, 'props.newsPage.posts', []);
+    const posts = get(this, 'state.savedPosts', []);
     if (posts.length > 0) {
       return posts.map((item, i) => (
         <Col span={6} key={i}>

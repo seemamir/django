@@ -27,6 +27,7 @@ export function* create(action) {
       ...payload,
     };
     const response = yield call(createAccountApi, data);
+    yield call(api.sendVerificationEmail, payload.email);
     yield put(
       a.setResponse({ message: response.data, status: response.status }),
     );

@@ -102,6 +102,21 @@ def Signup(request):
   else:
     return JsonResponse({'error': "This request only handles post request"})
 
+def sendVerificationEmail(request):
+  method = request.method;
+  if method == "POST":
+    data = json.loads(request.body)
+    email = data.get('email',1)
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.connect("smtp.gmail.com",587)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login('ilyas.datoo@gmail.com', '****')
+    server.sendmail('ilyas.datoo@gmail.com', email, "Hi {email}, you are registered to news website.".format(email=email) )
+    server.quit() 
+  else:
+    return JsonResponse({'error': 'Must be post method'})
 
 def ForgetPassword(request):
   method = request.method

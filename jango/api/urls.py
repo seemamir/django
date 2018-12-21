@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 from django.urls import path
 from rest_framework import routers
-from .views import PostViewSet, PostReactionViewSet, SavedPostViewSet, Login, Signup, ForgetPassword, UserViewSet, CommentViewSet, ProfileViewSet, ResetPassword, CommentReplyViewSet, CommentVoteViewSet, ReplyVoteViewSet
+from .views import PostViewSet, PostReactionViewSet, SavedPostViewSet, Login, Signup, ForgetPassword, UserViewSet, CommentViewSet, ProfileViewSet, ResetPassword, CommentReplyViewSet, CommentVoteViewSet, ReplyVoteViewSet, sendVerificationEmail
 
 from django.conf.urls import url
  
@@ -19,5 +19,6 @@ router.register(r'reply-vote', ReplyVoteViewSet)
 urlpatterns = [
   url(r'', include(router.urls)),
   url('forget-password/',ForgetPassword),
-  url('reset-password/',ResetPassword)
+  url('reset-password/',ResetPassword),
+  url('send-verification-email/',sendVerificationEmail)
 ]

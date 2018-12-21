@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import { Form, Icon, Input, Button, Row, Col, Alert, notification } from 'antd';
@@ -11,6 +12,7 @@ import makeSelectSignup from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import * as a from './actions';
+import {sendVerificationEmail} from './api';
 const FormItem = Form.Item;
 
 /* eslint-disable react/prefer-stateless-function */
@@ -28,18 +30,19 @@ export class Signup extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.props.createAccount(values);
+        setTimeout(() => {
+          const { response } = this.props.signup;
+          if (response && response.status && response.status === 201) {
+              notification["success"]({
+                message: 'Account created',
+                description: 'Your account has been created successfuly. ',
+              });
+              sendVerificationEmail(values.email);
+              this.props.history.push('/');
+          }
+        }, 3000);
       }
     });
-    setTimeout(() => {
-      const { response } = this.props.signup;
-      if (response && response.status && response.status === 201) {
-          notification["success"]({
-            message: 'Account created',
-            description: 'Your account has been created successfuly. ',
-          });
-          this.props.history.push('/');
-      }
-    }, 3000);
   };
 
   handleErrors = () => {
