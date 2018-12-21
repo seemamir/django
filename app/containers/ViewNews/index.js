@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import {Link} from "react-router-dom"
+import { Link } from 'react-router-dom';
 import injectSaga from 'utils/injectSaga';
 import { get } from 'lodash';
 import createHistory from 'history/createBrowserHistory';
@@ -34,7 +34,7 @@ import {
   patchCommentVote,
   patchPostReaction,
   deletePostReaction,
-  deleteCommentVote
+  deleteCommentVote,
 } from './api';
 import makeSelectGlobalState from '../App/selectors';
 import makeSelectViewNews from './selectors';
@@ -113,7 +113,7 @@ class Replyform extends React.Component {
             <textarea
               name="comment"
               rows="3"
-              style={{ height: '52px', marginTop: "20px" }}
+              style={{ height: '52px', marginTop: '20px' }}
               value={this.state.replyField}
               onChange={e => this.setState({ replyField: e.target.value })}
               placeholder="Write ur reply here"
@@ -121,7 +121,7 @@ class Replyform extends React.Component {
           </Col>
           <Col span={4}>
             <Button
-              style={{ marginTop: "20px", marginLeft: "20px"}}
+              style={{ marginTop: '20px', marginLeft: '20px' }}
               onClick={() => this.publishReply()}
               type="primary"
             >
@@ -152,26 +152,26 @@ class CommentReplyItem extends React.Component {
     this.fetchVotes(this.props.item.id);
   }
 
-  checkVote = async (type) => {
+  checkVote = async type => {
     const replyId = get(this, 'props.item.id', null);
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    let filter = this.state.votes.filter((c) => c.user == userID );
-    let totalFiltered = get(filter,'length',0)
-    let currentVote = get(filter,'[0]',{});
+    const filter = this.state.votes.filter(c => c.user == userID);
+    const totalFiltered = get(filter, 'length', 0);
+    const currentVote = get(filter, '[0]', {});
     if (totalFiltered > 0) {
-      let currentVoteType = get(currentVote,'vote_type','');
+      const currentVoteType = get(currentVote, 'vote_type', '');
       if (currentVoteType == type) {
         await deleteReplyVote(currentVote.id);
-      }else {
+      } else {
         // updatePost
         currentVote.vote_type = type;
         await patchReplyVote(currentVote);
       }
-    }else {
+    } else {
       const user = JSON.parse(localStorage.getItem('user')) || {};
       const userID = get(user, 'id', null);
-      
+
       if (replyId > 0 && userID > 0) {
         await postReplyVote({
           reply: replyId,
@@ -181,25 +181,23 @@ class CommentReplyItem extends React.Component {
       }
     }
     this.fetchVotes(replyId);
-  }
+  };
 
   async vote(type) {
     this.checkVote(type);
   }
 
   handleRedirect = () => {
-    
-    let {history} = this.props;
+    const { history } = this.props;
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    const replyUserID = get(this,'props.item.user');
+    const replyUserID = get(this, 'props.item.user');
     if (userID == replyUserID) {
-      history.push("/news-page")
-    }else {
-      history.push(`/profile/${replyUserID}`)
+      history.push('/news-page');
+    } else {
+      history.push(`/profile/${replyUserID}`);
     }
-    
-  }
+  };
 
   fetchVotes = async replyId => {
     if (replyId > 0) {
@@ -210,13 +208,12 @@ class CommentReplyItem extends React.Component {
         const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
         this.setState({ totalUpvotes: upvotes.length });
         this.setState({ totalDownvotes: downvotes.length });
-        this.setState({ votes: votes });
+        this.setState({ votes });
       } catch (e) {
         console.log(e.message);
       }
     }
-  }
-
+  };
 
   fetchUser = async () => {
     try {
@@ -235,27 +232,30 @@ class CommentReplyItem extends React.Component {
 
   render() {
     return (
- 
-        <List.Item
-          actions={[
-            <IconText
-              onClick={() => this.vote('UP_VOTE')}
-              type="like-o"
-
-              text={this.state.totalUpvotes}
-            />,
-            <IconText
-              onClick={() => this.vote('DOWN_VOTE')}
-              type="dislike-o"
-
-              text={this.state.totalDownvotes}
-            />,
-          ]}
-        >
+      <List.Item
+        actions={[
+          <IconText
+            onClick={() => this.vote('UP_VOTE')}
+            type="like-o"
+            text={this.state.totalUpvotes}
+          />,
+          <IconText
+            onClick={() => this.vote('DOWN_VOTE')}
+            type="dislike-o"
+            text={this.state.totalDownvotes}
+          />,
+        ]}
+      >
         <List.Item.Meta
-          avatar={<a onClick={ this.handleRedirect } ><Avatar src={get(this, 'state.user.image', '')} /></a>}
+          avatar={
+            <a onClick={this.handleRedirect}>
+              <Avatar src={get(this, 'state.user.image', '')} />
+            </a>
+          }
           title={
-            <a onClick={ this.handleRedirect } >{get(this, 'state.user.name', '')}</a>
+            <a onClick={this.handleRedirect}>
+              {get(this, 'state.user.name', '')}
+            </a>
           }
           description={get(this, 'props.item.reply', '')}
         />
@@ -278,7 +278,9 @@ class CommentReplies extends React.Component {
           dataSource={replies}
           pagination={replies.length > 10}
           emptyText=""
-          renderItem={item => <CommentReplyItem history={this.props.history} item={item} />}
+          renderItem={item => (
+            <CommentReplyItem history={this.props.history} item={item} />
+          )}
         />
       </div>
     );
@@ -299,7 +301,7 @@ class Comment extends React.Component {
       replies: [],
       totalUpvotes: 0,
       totalDownvotes: 0,
-      votes: []
+      votes: [],
     };
   }
 
@@ -312,7 +314,7 @@ class Comment extends React.Component {
         const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
         this.setState({ totalUpvotes: upvotes.length });
         this.setState({ totalDownvotes: downvotes.length });
-        this.setState({ votes: votes });
+        this.setState({ votes });
       } catch (e) {
         console.log(e.message);
       }
@@ -320,19 +322,17 @@ class Comment extends React.Component {
   };
 
   handleRedirect = () => {
-    
-    let {history} = this.props;
+    const { history } = this.props;
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    const commentUserID = get(this,'props.comment.user');
-    console.log(userID, commentUserID)
+    const commentUserID = get(this, 'props.comment.user');
+    console.log(userID, commentUserID);
     if (userID == commentUserID) {
-      history.push("/news-page")
-    }else {
-      history.push(`/profile/${commentUserID}`)
+      history.push('/news-page');
+    } else {
+      history.push(`/profile/${commentUserID}`);
     }
-    
-  }
+  };
 
   getName = () => {
     const name = get(this, 'state.user.username', '');
@@ -373,26 +373,26 @@ class Comment extends React.Component {
     }
   };
 
-  check = async (type) => {
+  check = async type => {
     const commentID = get(this, 'props.comment.id', null);
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    let filter = this.state.votes.filter((c) => c.user == userID );
-    let totalFiltered = get(filter,'length',0)
-    let currentVote = get(filter,'[0]',{});
+    const filter = this.state.votes.filter(c => c.user == userID);
+    const totalFiltered = get(filter, 'length', 0);
+    const currentVote = get(filter, '[0]', {});
     if (totalFiltered > 0) {
-      let currentVoteType = get(currentVote,'vote_type','');
+      const currentVoteType = get(currentVote, 'vote_type', '');
       if (currentVoteType == type) {
         await deleteCommentVote(currentVote.id);
-      }else {
+      } else {
         // updatePost
         currentVote.vote_type = type;
         await patchCommentVote(currentVote);
       }
-    }else {
+    } else {
       const user = JSON.parse(localStorage.getItem('user')) || {};
       const userID = get(user, 'id', null);
-      
+
       if (commentID > 0 && userID > 0) {
         await postCommentVote({
           comment: commentID,
@@ -402,7 +402,7 @@ class Comment extends React.Component {
       }
     }
     this.fetchVotes(commentID);
-  }
+  };
 
   vote = async type => {
     this.check(type);
@@ -426,7 +426,7 @@ class Comment extends React.Component {
       ReplyContent = emptyDiv;
     }
     return (
-      <div style={{width: "80%"}}>
+      <div style={{ width: '80%' }}>
         <List.Item
           actions={[
             <IconText
@@ -448,14 +448,24 @@ class Comment extends React.Component {
           ]}
         >
           <List.Item.Meta
-            avatar={<a onClick={ this.handleRedirect } ><Avatar src={get(this, 'state.user.image', '')} /></a>}
+            avatar={
+              <a onClick={this.handleRedirect}>
+                <Avatar src={get(this, 'state.user.image', '')} />
+              </a>
+            }
             title={
-              <a onClick={ this.handleRedirect } >{get(this, 'state.user.name', '')}</a>
+              <a onClick={this.handleRedirect}>
+                {get(this, 'state.user.name', '')}
+              </a>
             }
             description={comment.comment}
           />
         </List.Item>
-        <CommentReplies history={this.props.history} replies={this.state.replies} comment={comment} />
+        <CommentReplies
+          history={this.props.history}
+          replies={this.state.replies}
+          comment={comment}
+        />
         <ReplyContent
           comment={comment}
           fetchReplies={() => this.fetchReplies()}
@@ -484,28 +494,28 @@ export class ViewNews extends React.Component {
   }
 
   postReaction = async type => {
-    let allReactions = get(this,'props.viewNews.postReactions',[]);
+    const allReactions = get(this, 'props.viewNews.postReactions', []);
     const { id } = this.props.globalState.user;
     const userId = id;
     const postId = parseInt(get(this, 'props.match.params.id', null));
-    let filter = allReactions.filter((c) => c.user == userId );
-    let length = get(filter,'length',0);
+    const filter = allReactions.filter(c => c.user == userId);
+    const length = get(filter, 'length', 0);
     if (length > 0) {
-      let currentReaction = get(filter,'[0]',null)
+      const currentReaction = get(filter, '[0]', null);
       if (type == currentReaction.reaction_type) {
         await deletePostReaction(currentReaction.id);
-      }else {
+      } else {
         currentReaction.reaction_type = type;
         await patchPostReaction(currentReaction);
       }
-      console.log(currentReaction,type)
+      console.log(currentReaction, type);
       setTimeout(() => {
         this.props.getPostReactions(postId);
       }, 500);
       setTimeout(() => {
         this.filterPostReactions();
       }, 1000);
-    }else {
+    } else {
       const data = {
         post: postId,
         user: userId,
@@ -559,7 +569,7 @@ export class ViewNews extends React.Component {
       this.props.comment({
         comment: this.state.commentField,
         post: parseInt(get(this, 'props.match.params.id', null)),
-        user: get(this,'props.globalState.user.id',null)
+        user: get(this, 'props.globalState.user.id', null),
       });
       this.setState({
         commentField: '',
@@ -596,7 +606,9 @@ export class ViewNews extends React.Component {
       if (comments.length == 0) {
         return <div>No Comments</div>;
       }
-      const commentsA = comments.map(c => <Comment history={this.props.history} comment={c} />);
+      const commentsA = comments.map(c => (
+        <Comment history={this.props.history} comment={c} />
+      ));
       return (
         <div>
           <List
@@ -636,27 +648,22 @@ export class ViewNews extends React.Component {
                 <Form onChange={this.handleChange}>
                   <Row>
                     <Col span={18} offset={3}>
-
-                      <p className="view-sentences">{post.sentence2}</p>
+                      <p className="view-sentences">{post.main_sentence}</p>
                     </Col>
-                  
                   </Row>
                   <Row>
-
                     <Col span={18} offset={3}>
-                   
-                    <div className="main-sentence">
-
+                      <div className="main-sentence">
+                        <p className="view-sentences">{post.sentence2}</p>
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={18} offset={3}>
                       <p className="view-sentences">{post.sentence3}</p>
-                    
-                    </div>
                     </Col>
                   </Row>
-                  <Row>
-                    <Col span={18} offset={3}>
-                        <p className="view-sentences">{post.main_sentence}</p>
-                    </Col>
-                  </Row>
+
                   <Row>
                     <Col span={18} offset={3}>
                       <div className="main-sentence">
@@ -666,10 +673,10 @@ export class ViewNews extends React.Component {
                   </Row>
                   <Row>
                     <Col span={18} offset={3}>
-                        <p className="view-sentences">{post.sentence5}</p>
+                      <p className="view-sentences">{post.sentence5}</p>
                     </Col>
                   </Row>
-                 
+
                   <Row>
                     <Col span={24}>
                       <Button
