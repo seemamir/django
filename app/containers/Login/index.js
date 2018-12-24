@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Form, Icon, Input, Button, Row, Col, Alert } from 'antd';
+import { Form, Icon, Input, Button, Row, Col, Alert, notification } from 'antd';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import makeSelectLogin from './selectors';
@@ -41,17 +41,21 @@ export class Login extends React.Component {
       if (user != 0) {
         localStorage.setItem('email', a.email);
         this.props.history.push('/home');
-        window.location.reload();
       }else {
         a.username = a.email;
         a.password1 = a.password2 = a.password = 'socialpassword/12345';
         this.props.createAccount(a);
+
         setTimeout(() => {
           const { response } = this.props.login;
-          if (response && response.status && response.status === 200) {
+          let status = get(response,'status',200);
+          if (status === 201 || status === 200) {
             localStorage.setItem('email', a.email);
+            notification["success"]({
+              message: 'Account created',
+              description: 'Your account has been created successfuly. ',
+            });
             this.props.history.push('/home');
-            window.location.reload();
           }
         }, 1000);
       }
@@ -270,7 +274,7 @@ export class Login extends React.Component {
                 </FormItem>
                 {response &&
                   response.status &&
-                  response.status !== 200 && (
+                  (response.status !== 200 && response.status !== 201) && (
                     <Alert
                       message="Unable to log in with provided credentials."
                       type="error"

@@ -56,7 +56,7 @@ class PostReactionViewSet(viewsets.ModelViewSet):
   filter_fields = ('post','user','reaction_type')
 
 class SavedPostViewSet(viewsets.ModelViewSet):
-  queryset = SavedPost.objects.all()
+  queryset = SavedPost.objects.all().order_by('-id')
   serializer_class = SavedPostSerializer
   filter_backends = (DjangoFilterBackend,)
   filter_fields = ('id', 'user')
