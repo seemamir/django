@@ -21,7 +21,11 @@ export const patchPostReaction = data => axios.patch(`/api/post-reaction/${data.
 export const deleteCommentVote = id => axios.delete(`/api/comment-vote/${id}`);
 export const postReplyVote = data => axios.post(`/api/reply-vote/`, data);
 export const patchReplyVote = data => axios.patch(`/api/reply-vote/${data.id}/`, data);
+export const patchCommentReply = data => axios.patch(`/api/comment-reply/${data.id}/`, data);
 export const deleteReplyVote = id => axios.delete(`/api/reply-vote/${id}/`);
+export const deleteComment = id => axios.delete(`/api/comment/${id}/`);
+export const patchComment = data => axios.patch(`/api/comment/${data.id}/`, data);
+export const deleteCommentReply = id => axios.delete(`/api/comment-reply/${id}/`);
 export const deletePostReaction = id => axios.delete(`/api/post-reaction/${id}/`);
 export const fetchCommentVotes = commentID =>
   axios.get(`/api/comment-vote/?comment=${commentID}`);
