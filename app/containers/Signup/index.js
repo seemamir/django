@@ -37,7 +37,6 @@ export class Signup extends React.Component {
                 message: 'Account created',
                 description: 'Your account has been created successfuly. ',
               });
-              sendVerificationEmail(values.email);
               this.props.history.push('/');
           }
         }, 3000);
