@@ -28,11 +28,15 @@ export class ResetPassword extends React.Component {
     
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
-        this.props.resetPassword(values);
-        setTimeout(() => {
-          this.props.history.push('/login');
-        },3000)
+        if(values.password == values.confirm_password) {
+          console.log(values);
+          this.props.resetPassword(values);
+          setTimeout(() => {
+            this.props.history.push('/');
+          },3000)
+        }else {
+          alert("Password doesnot matches..");
+        }
       }
     });
   }
