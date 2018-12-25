@@ -112,8 +112,8 @@ def sendVerificationEmail(request):
     server.ehlo()
     server.starttls()
     server.ehlo()
-    server.login('ilyas.datoo@gmail.com', '****')
-    server.sendmail('ilyas.datoo@gmail.com', email, "Hi {email}, you are registered to news website.".format(email=email) )
+    server.login('jangonewsmailer@gmail.com', 'jango/12345')
+    server.sendmail('jangonewsmailer@gmail.com', email, "Hi {email}, you are registered to news website.".format(email=email) )
     server.quit() 
   else:
     return JsonResponse({'error': 'Must be post method'})
@@ -136,8 +136,8 @@ def ForgetPassword(request):
   server.ehlo()
   server.starttls()
   server.ehlo()
-  server.login('ilyas.datoo@gmail.com', '********')
-  server.sendmail('ilyas.datoo@gmail.com', email, "Hey, use {token} to reset your password.".format(token=token) )
+  server.login('jangonewsmailer@gmail.com', 'jango/12345')
+  server.sendmail('jangonewsmailer@gmail.com', email, "Hey, use {token} to reset your password.".format(token=token) )
   server.quit() 
   return JsonResponse({'success': 'true','message': 'Email has been sent to the requested email'})
   
