@@ -16,7 +16,18 @@ import { get } from 'lodash';
 import createHistory from 'history/createBrowserHistory';
 
 import injectReducer from 'utils/injectReducer';
-import { Row, Col, Icon, Button, Form, List, Avatar, Input,Modal, message} from 'antd';
+import {
+  Row,
+  Col,
+  Icon,
+  Button,
+  Form,
+  List,
+  Avatar,
+  Input,
+  Modal,
+  message,
+} from 'antd';
 import { Spin } from 'antd';
 import styled from 'styled-components';
 import { empty } from 'rxjs';
@@ -241,13 +252,13 @@ class CommentReplyItem extends React.Component {
   };
 
   async editReply() {
-    this.setState({loading: true})
-    let item = get(this,'props.item',null);
+    this.setState({ loading: true });
+    const item = get(this, 'props.item', null);
     if (item) {
-      item.reply = get(this,'state.editValue','');
+      item.reply = get(this, 'state.editValue', '');
       try {
         await patchCommentReply(item);
-        this.setState({loading: false, editValue: "",editDialog: false});
+        this.setState({ loading: false, editValue: '', editDialog: false });
         message.success('Comment reply edited');
         this.props.refetch();
       } catch (e) {
@@ -257,12 +268,17 @@ class CommentReplyItem extends React.Component {
   }
 
   async deleteNow() {
-    this.setState({loading: true});
-    let id = get(this,'props.item.id',null);
+    this.setState({ loading: true });
+    const id = get(this, 'props.item.id', null);
     if (id) {
       try {
         await deleteCommentReply(id);
-        this.setState({loading: false, editValue: "",editDialog: false, deleteDialog: false});
+        this.setState({
+          loading: false,
+          editValue: '',
+          editDialog: false,
+          deleteDialog: false,
+        });
         message.success('Comment reply deleted');
         this.props.refetch();
       } catch (e) {
@@ -271,32 +287,37 @@ class CommentReplyItem extends React.Component {
     }
   }
 
+  getUser = () => {
+    const user = JSON.parse(localStorage.getItem('user')) || {};
+    const userID = get(user, 'id', null);
+    return userID
+  }
   render() {
-    let loading = (this.state.loading) ? loader : <div></div>;
+    const loading = this.state.loading ? loader : <div />;
     return (
       <div>
         <Modal
           title="Edit Comment"
           visible={this.state.editDialog}
-          onOk={  () => this.editReply() }
-          onCancel={ () => this.setState({editDialog: false}) }
+          onOk={() => this.editReply()}
+          onCancel={() => this.setState({ editDialog: false })}
         >
-
-          <Input value={this.state.editValue} onChange={ (e) => this.setState({editValue: e.target.value}) } />
-          { loading }
+          <Input
+            value={this.state.editValue}
+            onChange={e => this.setState({ editValue: e.target.value })}
+          />
+          {loading}
         </Modal>
         <Modal
           title="Modal"
           visible={this.state.deleteDialog}
-          onOk={ () => this.deleteNow() }
-          onCancel={ () => this.setState({ editDialog: false }) }
+          onOk={() => this.deleteNow()}
+          onCancel={() => this.setState({ deleteDialog: false })}
           okText="Delete Now"
           cancelText="cancel"
         >
-          <p>
-            Are you sure you want to delete the dialog?
-          </p>
-          { loading }
+          <p>Are you sure you want to delete the dialog?</p>
+          {loading}
         </Modal>
         <List.Item
           actions={[
@@ -310,16 +331,30 @@ class CommentReplyItem extends React.Component {
               type="dislike-o"
               text={this.state.totalDownvotes}
             />,
-            <IconText
-              onClick={() => this.setState({editDialog: true,editValue: get(this, 'props.item.reply', '')}) }
-              type=""
-              text={"Edit"}
-            />,
-            <IconText
-              onClick={() => this.setState({deleteDialog: true}) }
-              type=""
-              text={"Delete"}
-            />
+            <div
+              style={{
+                display:
+                  this.getUser() === this.props.item.user
+                    ? "block"
+                    : 'none'
+              }}
+            >
+              <IconText
+                onClick={() =>
+                  this.setState({
+                    editDialog: true,
+                    editValue: get(this, 'props.item.reply', ''),
+                  })
+                }
+                type="edit"
+              />
+                
+              <IconText
+                onClick={() => this.setState({ deleteDialog: true })}
+                type="delete"
+              />
+              
+            </div>
           ]}
         >
           <List.Item.Meta
@@ -356,7 +391,11 @@ class CommentReplies extends React.Component {
           pagination={replies.length > 10}
           emptyText=""
           renderItem={item => (
-            <CommentReplyItem refetch={ () => this.props.refetch() }  history={this.props.history} item={item} />
+            <CommentReplyItem
+              refetch={() => this.props.refetch()}
+              history={this.props.history}
+              item={item}
+            />
           )}
         />
       </div>
@@ -378,8 +417,8 @@ class Comment extends React.Component {
       replies: [],
       loading: false,
       editDialog: false,
-      editValue: "",
-      deleteDialog: "",
+      editValue: '',
+      deleteDialog: '',
       totalUpvotes: 0,
       totalDownvotes: 0,
       votes: [],
@@ -407,7 +446,7 @@ class Comment extends React.Component {
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
     const commentUserID = get(this, 'props.comment.user');
-    console.log(userID, commentUserID);
+
     if (userID == commentUserID) {
       history.push('/news-page');
     } else {
@@ -490,12 +529,17 @@ class Comment extends React.Component {
   };
 
   async deleteNow() {
-    this.setState({loading: false});
-    let id = get(this,'props.comment.id',null);
+    this.setState({ loading: false });
+    const id = get(this, 'props.comment.id', null);
     if (id) {
       try {
         await deleteComment(id);
-        this.setState({loading: false, editValue: "",editDialog: false, deleteDialog: false});
+        this.setState({
+          loading: false,
+          editValue: '',
+          editDialog: false,
+          deleteDialog: false,
+        });
         message.success('Comment deleted');
         this.props.refetch();
       } catch (e) {
@@ -506,13 +550,13 @@ class Comment extends React.Component {
   }
 
   async editComment() {
-    this.setState({loading: true})
-    let item = get(this,'props.comment',null);
+    this.setState({ loading: true });
+    const item = get(this, 'props.comment', null);
     if (item) {
-      item.comment = get(this,'state.editValue','');
+      item.comment = get(this, 'state.editValue', '');
       try {
         await patchComment(item);
-        this.setState({loading: false, editValue: "",editDialog: false});
+        this.setState({ loading: false, editValue: '', editDialog: false });
         message.success('Comment edited');
         this.props.refetch();
       } catch (e) {
@@ -520,9 +564,14 @@ class Comment extends React.Component {
       }
     }
   }
+  getUser = () =>  {
+    const user = JSON.parse(localStorage.getItem('user')) || {};
+    const userID = get(user, 'id', null);
+    return userID
+  }
 
   render() {
-    let loading = (this.state.loading) ? loader : <div></div>;
+    const loading = this.state.loading ? loader : <div />;
     const comment = get(this, 'props.comment', { comment: '' });
     let ReplyContent = Replyform;
     if (!this.state.replyFormShow) {
@@ -533,25 +582,25 @@ class Comment extends React.Component {
         <Modal
           title="Edit Comment"
           visible={this.state.editDialog}
-          onOk={  () => this.editComment() }
-          onCancel={ () => this.setState({editDialog: false}) }
+          onOk={() => this.editComment()}
+          onCancel={() => this.setState({ editDialog: false })}
         >
-
-          <Input value={this.state.editValue} onChange={ (e) => this.setState({editValue: e.target.value}) } />
-          { loading }
+          <Input
+            value={this.state.editValue}
+            onChange={e => this.setState({ editValue: e.target.value })}
+          />
+          {loading}
         </Modal>
         <Modal
           title="Modal"
           visible={this.state.deleteDialog}
-          onOk={ () => this.deleteNow() }
-          onCancel={ () => this.setState({ deleteDialog: false }) }
+          onOk={() => this.deleteNow()}
+          onCancel={() => this.setState({ deleteDialog: false })}
           okText="Delete Now"
           cancelText="cancel"
         >
-          <p>
-            Are you sure you want to delete the dialog?
-          </p>
-          { loading }
+          <p>Are you sure you want to delete the dialog?</p>
+          {loading}
         </Modal>
         <List.Item
           actions={[
@@ -571,16 +620,28 @@ class Comment extends React.Component {
                 this.setState({ replyFormShow: !this.state.replyFormShow })
               }
             />,
-            <IconText
-              onClick={() => this.setState({editDialog: true,editValue: get(this, 'props.comment.comment', '')}) }
-              type=""
-              text={"Edit"}
-            />,
-            <IconText
-              onClick={() => this.setState({deleteDialog: true}) }
-              type=""
-              text={"Delete"}
-            />
+            <div
+              style={{
+                display:
+                  this.getUser() === this.props.comment.user
+                    ? "block"
+                    : 'none'
+              }}
+            >
+              <IconText
+                onClick={() =>
+                  this.setState({
+                    editDialog: true,
+                    editValue: get(this, 'props.comment.comment', ''),
+                  })
+                }
+                type="edit"
+              />
+              <IconText
+                onClick={() => this.setState({ deleteDialog: true })}
+                type="delete"
+              />
+            </div>
           ]}
         >
           <List.Item.Meta
@@ -733,21 +794,22 @@ export class ViewNews extends React.Component {
     };
     this.props.saveAsSavedPost(payload);
   };
+
   fetchagain() {
     this.setState({
-      commentsEmpty: true
-    })
+      commentsEmpty: true,
+    });
     setTimeout(() => {
       this.setState({
-        commentsEmpty: false
-      })
-      this.props.fetchPostComments(this.props.match.params.id)
-    },30)
+        commentsEmpty: false,
+      });
+      this.props.fetchPostComments(this.props.match.params.id);
+    }, 30);
   }
 
   renderComments = () => {
     if (this.state.commentsEmpty) {
-      return <div></div>
+      return <div />;
     }
     const writeReply = () => {
       const { TextArea } = Input;
@@ -759,9 +821,13 @@ export class ViewNews extends React.Component {
         return <div>No Comments</div>;
       }
       const commentsA = comments.map(c => (
-        <Comment history={this.props.history} comment={c} refetch={ () => {
-          this.fetchagain()
-        }} />
+        <Comment
+          history={this.props.history}
+          comment={c}
+          refetch={() => {
+            this.fetchagain();
+          }}
+        />
       ));
       return (
         <div>

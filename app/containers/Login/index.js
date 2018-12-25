@@ -91,28 +91,6 @@ export class Login extends React.Component {
       window.gapi.auth2.getAuthInstance().then(auth2 => {
         auth2.signIn().then(googleUser => {
           const profile = googleUser.getBasicProfile();
-          // const payload = {
-          //   auth_data: {
-          //     credentials: {
-          //       expires_at: googleUser.Zi.expires_at,
-          //       token: googleUser.Zi.access_token
-          //     },
-          //     info: {
-          //       id: profile.getId(),
-          //       name: profile.getName(),
-          //       image_url: profile.getImageUrl(),
-          //       email: profile.getEmail()
-          //     },
-          //     provider: 'google_oauth2',
-          //     uid: profile.getId()
-          //   }
-          // }
-          // this.socialLogin({
-          //   platform: 'google_oauth2',
-          //   payload
-          // }).then(() => {
-          //   this.handleLoginRedirect()
-          // })
           this.prepareLogin({
             email: profile.getEmail(),
             image: profile.getImageUrl(),
@@ -133,24 +111,7 @@ export class Login extends React.Component {
             email: res.values[0].emailAddress,
             image: res.values[0].pictureUrl,
           });
-          // const payload = {
-          //   auth_data: {
-          //     credentials: {
-          //       expires_at:
-          //         Date.now() + window.IN.ENV.auth.oauth_expires_in * 1000,
-          //       token: window.IN.ENV.auth.oauth_token,
-          //     },
-          //     info: {
-          //       id: res.values[0].id,
-          //       name: `${res.values[0].firstName} ${res.values[0].lastName}`,
-          //       image_url: res.values[0].pictureUrl,
-          //       email: res.values[0].emailAddress,
-          //     },
-          //     provider: 'linkedin',
-          //     uid: res.values[0].id,
-          //   },
-          // };
-          // console.log(payload);
+
           const payload = {
             auth_data: {
               credentials: {
