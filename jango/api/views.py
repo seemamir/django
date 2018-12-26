@@ -115,6 +115,7 @@ def sendVerificationEmail(request):
     server.login('jangonewsmailer@gmail.com', 'jango/12345')
     server.sendmail('jangonewsmailer@gmail.com', email, "Hi {email}, you are registered to news website.".format(email=email) )
     server.quit() 
+    return JsonResponse({'success': True, 'message': "Email sent"});
   else:
     return JsonResponse({'error': 'Must be post method'})
 

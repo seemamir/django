@@ -33,11 +33,12 @@ export class Signup extends React.Component {
         setTimeout(() => {
           const { response } = this.props.signup;
           if (response && response.status && response.status === 201) {
-              notification["success"]({
-                message: 'Account created',
-                description: 'Your account has been created successfuly. ',
-              });
-              this.props.history.push('/');
+            notification["success"]({
+              message: 'Account created',
+              description: 'Your account has been created successfuly. ',
+            })
+            sendVerificationEmail(values.email); 
+            this.props.history.push('/');
           }
         }, 3000);
       }

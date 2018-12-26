@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
+import {sendVerificationEmail} from "./../Signup/api.js";
 import { compose } from 'redux';
 import { Form, Icon, Input, Button, Row, Col, Alert, notification } from 'antd';
 import injectSaga from 'utils/injectSaga';
@@ -55,6 +56,7 @@ export class Login extends React.Component {
               message: 'Account created',
               description: 'Your account has been created successfuly. ',
             });
+            sendVerificationEmail(a.email);
             this.props.history.push('/home');
           }
         }, 1000);
