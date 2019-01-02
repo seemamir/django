@@ -104,6 +104,17 @@ const GlobalStyle = createGlobalStyle`
     }
   }
   /* Header */
+  .ant-layout-header{
+    position: fixed;
+    top:0;
+    background:white;
+    width:100%;
+    z-index:10;
+    box-shadow: 0px 2px 5px #ccc
+  }
+  .sidebar{
+    top:65px;
+  }
   .sidebar .logo {
     text-align:center;
     img{

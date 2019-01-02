@@ -61,7 +61,7 @@ import * as a from './actions';
 const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 const loader = <Spin indicator={antIcon} />;
 const Wrapper = styled.div`
-  margin: 20px auto;
+  margin: 100px auto 20px auto;
   text-align: center;
   .main-heading {
     margin-bottom: 30px;

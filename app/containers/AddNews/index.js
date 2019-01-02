@@ -82,7 +82,7 @@ componentDidMount(){
           <meta name="description" content="Description of AddNews" />
         </Helmet>
         <Header history={this.props.history}/>
-        <div className="container">
+        <div className="container" style={{marginTop: "90px"}}>
           <div className="bg-white">
             <Row>
               <Col span={18} offset={3}>

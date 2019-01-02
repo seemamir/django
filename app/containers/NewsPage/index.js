@@ -217,7 +217,7 @@ export class NewsPage extends React.Component {
         </Helmet>
             <Header history={this.props.history}/>
 
-        <div className="container">
+        <div className="container" style={{marginTop:"100px"}}>
           <Row>
             <Col span={6}>
               <Card style={{ marginRight: '20px', textAlign: 'center' }}>

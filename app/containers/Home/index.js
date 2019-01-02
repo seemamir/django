@@ -55,7 +55,7 @@ export class Home extends React.Component {
 
         <Layout>
           <Sidebar filter={this.filter} />
-          <Layout style={{ marginLeft: '200px' }}>
+          <Layout style={{ marginLeft: '200px', marginTop: "55px" }}>
             <Content className="content">
               <div className="filters">
                 <Button
