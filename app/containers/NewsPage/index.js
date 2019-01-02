@@ -58,14 +58,9 @@ class SavedPostView extends React.Component {
     const image = get(this, 'state.post.thumbnail_image', '');
     return (
       <Card
-        style={{ maxWidth: 350 }}
+        style={{ maxWidth: 350, maxHeight: 400}}
         className="news-box"
-        cover={
-          <img
-            alt="example"
-            src={image === undefined || image === '' ? thumbnail : image}
-          />
-        }
+        cover={<img alt="example" src={(image === undefined || image === "") ? thumbnail : image} style={{maxHeight: 200}}/>}
       >
         <h3>{title}</h3>
         <Button
