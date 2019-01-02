@@ -91,18 +91,24 @@ export class NewsPage extends React.Component {
   }
 
   async fetchSavedPosts() {
+    let bind = this;
     const localStorage = window.localStorage.getItem('user');
     try {
       const response = JSON.parse(localStorage);
       const id = get(response, 'id', null);
       if (id > 0) {
         const savedPosts = await axios.get(`/api/saved-post?user=${id}&a=123`);
-        this.setState({
-          savedPosts,
+        bind.setState({
+          savedPosts: [],
         });
+        setTimeout(() => {
+          bind.setState({
+            savedPosts,
+          });
+        }, 40);
       }
     } catch (e) {
-      console.log('something went wrong');
+      console.warn(e.message);
     }
   }
 
@@ -113,7 +119,6 @@ export class NewsPage extends React.Component {
     if (userID > 0) {
       this.props.fetchProfile(userID);
     }
-    this.props.fetchPost(userID);
     setTimeout(() => {
       this.setState({
         imageUrl: get(this.props, 'global.profile.image', ''),
@@ -182,16 +187,12 @@ export class NewsPage extends React.Component {
   };
 
   renderPosts = () => {
-    const posts = get(this, 'props.newsPage.posts', []);
+    const posts = get(this, 'state.savedPosts.data', []);
     if (posts.length > 0) {
       return posts.map((item, i) => (
         <Col span={6} key={i}>
           <SavedPostView
-            reload={() => {
-              const userID = get(this, 'props.global.user.id', null);
-              // const { user } = this.props.global;
-              this.props.fetchPost(userID);
-            }}
+            reload={() => this.fetchSavedPosts() }
             item={item}
           />
         </Col>
@@ -208,9 +209,6 @@ export class NewsPage extends React.Component {
   render() {
     const postsLength = get(this, 'props.newsPage.posts.length', 0);
     const id = get(this, 'props.global.user.id', null);
-    if (id > 0 && postsLength == 0) {
-      this.props.fetchPost(id);
-    }
     let image = <span />;
     if (this.state.imageUrl) {
       image = (
