@@ -14,6 +14,7 @@ import reducer from './reducer';
 import saga from './saga';
 import Header from '../Headerr/Loadable';
 import * as a from './actions';
+import thumbnail from "images/download.png"
 import { fetchSinglePost, deleteSavedPost } from './api.js';
 const { Meta } = Card;
 
@@ -22,6 +23,7 @@ const { Meta } = Card;
 class SavedPostView extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.item.id)
     this.fetchPost(this.props.item.post);
     this.state = {
       post: {},
@@ -46,7 +48,6 @@ class SavedPostView extends React.Component {
     this.props.reload();
   };
   handleViewRedirect = (id) => {
-    console.log(this.props.history)
     this.props.history.push(`/view/${id}`);
   }
   render() {
@@ -57,7 +58,7 @@ class SavedPostView extends React.Component {
       <Card
         style={{ maxWidth: 350 }}
         className="news-box"
-        cover={<img alt="example" src={image} />}
+        cover={<img alt="example" src={(image === undefined || image === "") ? thumbnail : image} />}
       >
         <h3>{title}</h3>
         <Button
@@ -164,6 +165,7 @@ export class NewsPage extends React.Component {
     if (posts.length > 0) {
       return posts.map((item, i) => (
         <Col span={6} key={i}>
+        { console.log(item.post) }
           <SavedPostView
             reload={() => {
               const userID = get(this, 'props.global.user.id', null);
@@ -184,6 +186,12 @@ export class NewsPage extends React.Component {
   };
 
   render() {
+
+    const postsLength = get(this, 'props.newsPage.posts.length', 0);
+    let id = get(this,'props.global.user.id',null);
+    if (id>0 && postsLength == 0) {
+      this.props.fetchPost(id);
+    }
     let image = <span />;
     if (this.state.imageUrl) {
       image = (

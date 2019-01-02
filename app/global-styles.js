@@ -25,10 +25,18 @@ const GlobalStyle = createGlobalStyle`
     width:85%;
     margin: 30px auto;
   }
+  .ant-list-item-meta-description{
+    word-wrap: break-word;
+    word-break: break-word;
+  }
   .bg-white{
     background: white;
     padding:20px;
     .view-sentences{
+      overflow-x: auto;
+      word-wrap: break-word;
+      word-break: break-word;
+      width: 100%;
       padding: 10px;
       border:1px solid #eee;
       min-height: 100px;
