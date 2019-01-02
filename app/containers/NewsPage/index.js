@@ -1,20 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import {Link} from "react-router-dom"
+import { Link } from 'react-router-dom';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import { Row, Col, Card, Alert, message, Button, Input } from 'antd';
 import { get } from 'lodash';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
+import thumbnail from 'images/download.png';
+import axios from '../../utils/http';
 import makeSelectNewsPage from './selectors';
 import makeSelectGlobalState from '../App/selectors';
 import reducer from './reducer';
 import saga from './saga';
 import Header from '../Headerr/Loadable';
 import * as a from './actions';
-import thumbnail from "images/download.png"
 import { fetchSinglePost, deleteSavedPost } from './api.js';
 const { Meta } = Card;
 
@@ -23,7 +24,6 @@ const { Meta } = Card;
 class SavedPostView extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props.item.id)
     this.fetchPost(this.props.item.post);
     this.state = {
       post: {},
@@ -47,9 +47,11 @@ class SavedPostView extends React.Component {
     await deleteSavedPost(id);
     this.props.reload();
   };
-  handleViewRedirect = (id) => {
+
+  handleViewRedirect = id => {
     this.props.history.push(`/view/${id}`);
-  }
+  };
+
   render() {
     const item = this.props.item;
     const title = get(this, 'state.post.title', '');
@@ -64,12 +66,13 @@ class SavedPostView extends React.Component {
         <Button
           onClick={() => this.deleteSavedPost(item.id)}
           className="danger-btn"
-          style={{marginRight: "5px"}}
+          style={{ marginRight: '5px' }}
         >
           Delete
         </Button>
-        <Link to={`/view/${item.post}`} className="primary-btn">View</Link>
-      
+        <Link to={`/view/${item.post}`} className="primary-btn">
+          View
+        </Link>
       </Card>
     );
   }
@@ -79,6 +82,7 @@ export class NewsPage extends React.Component {
     super(props);
     this.state = {
       loading: false,
+      savedPosts: [],
       imageUrl: '',
       name: '',
       bio: '',
@@ -86,8 +90,25 @@ export class NewsPage extends React.Component {
     };
   }
 
+  async fetchSavedPosts() {
+    const localStorage = window.localStorage.getItem('user');
+    try {
+      const response = JSON.parse(localStorage);
+      const id = get(response, 'id', null);
+      if (id > 0) {
+        const savedPosts = await axios.get(`/api/saved-post?user=${id}&a=123`);
+        this.setState({
+          savedPosts,
+        });
+      }
+    } catch (e) {
+      console.log('something went wrong');
+    }
+  }
+
   componentDidMount() {
-    this.props.reset()
+    this.props.reset();
+    this.fetchSavedPosts();
     const userID = get(this, 'props.global.user.id', null);
     if (userID > 0) {
       this.props.fetchProfile(userID);
@@ -97,7 +118,7 @@ export class NewsPage extends React.Component {
       this.setState({
         imageUrl: get(this.props, 'global.profile.image', ''),
         bio: get(this.props, 'global.profile.bio', ''),
-        name: get(this.props,'global.profile.name','')
+        name: get(this.props, 'global.profile.name', ''),
       });
     }, 1500);
   }
@@ -139,7 +160,7 @@ export class NewsPage extends React.Component {
       id: profile.id,
       image: this.state.imageUrl,
       bio: this.state.bio,
-      name: this.state.name
+      name: this.state.name,
     });
   };
 
@@ -165,7 +186,6 @@ export class NewsPage extends React.Component {
     if (posts.length > 0) {
       return posts.map((item, i) => (
         <Col span={6} key={i}>
-        { console.log(item.post) }
           <SavedPostView
             reload={() => {
               const userID = get(this, 'props.global.user.id', null);
@@ -186,10 +206,9 @@ export class NewsPage extends React.Component {
   };
 
   render() {
-
     const postsLength = get(this, 'props.newsPage.posts.length', 0);
-    let id = get(this,'props.global.user.id',null);
-    if (id>0 && postsLength == 0) {
+    const id = get(this, 'props.global.user.id', null);
+    if (id > 0 && postsLength == 0) {
       this.props.fetchPost(id);
     }
     let image = <span />;
@@ -208,14 +227,14 @@ export class NewsPage extends React.Component {
         />
       );
     }
-    const {response} = this.props.newsPage;
+    const { response } = this.props.newsPage;
     return (
       <div>
         <Helmet>
           <title>NewsPage</title>
           <meta name="description" content="Description of NewsPage" />
         </Helmet>
-            <Header history={this.props.history}/>
+        <Header history={this.props.history} />
 
         <div className="container" style={{marginTop:"100px"}}>
           <Row>
@@ -241,8 +260,12 @@ export class NewsPage extends React.Component {
             </Col>
             <Col span={14}>
               <Card>
-                <Input style={{marginBottom: '10px'}} placeholder="Your name" 
-                  onChange={e => this.setState({ name: e.target.value })} value={this.state.name}  />
+                <Input
+                  style={{ marginBottom: '10px' }}
+                  placeholder="Your name"
+                  onChange={e => this.setState({ name: e.target.value })}
+                  value={this.state.name}
+                />
                 <textarea
                   name="bio"
                   rows="5"
@@ -251,8 +274,8 @@ export class NewsPage extends React.Component {
                   onChange={e => this.setState({ bio: e.target.value })}
                   style={{ width: '100%' }}
                   placeholder="Enter your bio"
-                  />
-                  {this.state.value}
+                />
+                {this.state.value}
               </Card>
               {response &&
                 response.status &&
@@ -261,7 +284,7 @@ export class NewsPage extends React.Component {
                     message="Saved successfully"
                     type="success"
                     showIcon
-                    style={{marginTop:"20px", marginBottom: "0"}}
+                    style={{ marginTop: '20px', marginBottom: '0' }}
                   />
                 )}
               <Button

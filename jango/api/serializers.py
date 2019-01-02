@@ -39,7 +39,7 @@ class ForgetPasswordSerializer(serializers.ModelSerializer):
 
 
 class SavedPostSerializer(serializers.ModelSerializer):
-  # post = PostSerializer(many=False, read_only=False)
+  # post = PostSerializer(read_only=False)
   
   class Meta:
     model = SavedPost
