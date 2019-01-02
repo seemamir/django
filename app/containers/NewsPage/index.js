@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import {Link} from "react-router-dom"
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+import axios from '../../utils/http';
 import { Row, Col, Card, Alert, message, Button, Input } from 'antd';
 import { get } from 'lodash';
 import injectSaga from 'utils/injectSaga';
@@ -23,7 +24,6 @@ const { Meta } = Card;
 class SavedPostView extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props.item.id)
     this.fetchPost(this.props.item.post);
     this.state = {
       post: {},
@@ -79,6 +79,7 @@ export class NewsPage extends React.Component {
     super(props);
     this.state = {
       loading: false,
+      savedPosts: [],
       imageUrl: '',
       name: '',
       bio: '',
@@ -86,8 +87,25 @@ export class NewsPage extends React.Component {
     };
   }
 
+  async fetchSavedPosts() {
+    let localStorage = window.localStorage.getItem('user');
+    try {
+      let response = JSON.parse(localStorage);
+      let id = get(response,'id',null)
+      if (id>0) {
+        let savedPosts = await axios.get(`/api/saved-post?user=${id}&a=123`);
+        this.setState({
+          savedPosts: savedPosts
+        })
+      }
+    } catch (e) {
+      console.log("something went wrong");
+    }
+  }
+
   componentDidMount() {
-    this.props.reset()
+    this.props.reset();
+    this.fetchSavedPosts();
     const userID = get(this, 'props.global.user.id', null);
     if (userID > 0) {
       this.props.fetchProfile(userID);
@@ -165,7 +183,6 @@ export class NewsPage extends React.Component {
     if (posts.length > 0) {
       return posts.map((item, i) => (
         <Col span={6} key={i}>
-        { console.log(item.post) }
           <SavedPostView
             reload={() => {
               const userID = get(this, 'props.global.user.id', null);
