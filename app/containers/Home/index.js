@@ -15,6 +15,7 @@ import saga from './saga';
 import Header from '../Headerr/Loadable';
 import Sidebar from '../../components/Sidebar/Loadable';
 import * as a from './actions';
+import thumbnail from 'images/download.png';
 const { Content } = Layout;
 
 /* eslint-disable react/prefer-stateless-function */
@@ -22,27 +23,27 @@ export class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      logginUser: ''
+      logginUser: '',
     };
   }
-  
+
   componentDidMount() {
     this.props.fetchPosts();
     this.props.fetchUser();
   }
-  
+
   filter = category => {
     this.props.fetchPosts(category);
   };
-  
+
   viewPost = id => {
     this.props.history.push(`/view/${id}`);
   };
-  
+
   handleRedirect = () => {
     this.props.history.push('/add-news');
   };
-  
+
   render() {
     const { user } = this.props.userInfo;
     return (
@@ -54,57 +55,31 @@ export class Home extends React.Component {
         <Header history={this.props.history} />
 
         <Layout>
-          <Sidebar filter={this.filter} />
-          <Layout style={{ marginLeft: '200px', marginTop: "55px" }}>
+          <Layout style={{ marginTop: '60px' }}>
             <Content className="content">
               <div className="filters">
-                <Button
-                  onClick={() => this.filter('')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
-                  size="small"
-                >
+                <Button onClick={() => this.filter('')} size="small">
                   All
                 </Button>
-                <Button
-                  onClick={() => this.filter('Economy')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
-                  size="small"
-                >
+                <Button onClick={() => this.filter('Economy')} size="small">
                   Economy
                 </Button>
-                <Button
-                  onClick={() => this.filter('Politics')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
-                  size="small"
-                >
+                <Button onClick={() => this.filter('Politics')} size="small">
                   Politics
                 </Button>
-                <Button
-                  onClick={() => this.filter('Tech')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
-                  size="small"
-                >
+                <Button onClick={() => this.filter('Tech')} size="small">
                   Tech
                 </Button>
-                <Button
-                  onClick={() => this.filter('Life')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
-                  size="small"
-                >
+                <Button onClick={() => this.filter('Life')} size="small">
                   Life
                 </Button>
                 <Button
                   onClick={() => this.filter('Entertainment')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
                   size="small"
                 >
                   Entertainment
                 </Button>
-                <Button
-                  onClick={() => this.filter('Opinion')}
-                  style={{ marginRight: '10px', marginBottom: '20px' }}
-                  size="small"
-                >
+                <Button onClick={() => this.filter('Opinion')} size="small">
                   Opinion
                 </Button>
               </div>
@@ -123,8 +98,14 @@ export class Home extends React.Component {
                     extra={
                       <img
                         width={272}
+                        style={{ maxHeight: 250, maxWidth: 250 }}
                         alt="No image logo"
-                        src={item.thumbnail_image}
+                        src={
+                          item.thumbnail_image === undefined ||
+                          item.thumbnail_image === ''
+                            ? thumbnail
+                            : item.thumbnail_image
+                        }
                       />
                     }
                   >
@@ -137,15 +118,13 @@ export class Home extends React.Component {
                   </List.Item>
                 )}
               />
-              
-             {
-               user && user.is_superuser && (
-              <Button onClick={this.handleRedirect} type="primary">
-                Add new post
-              </Button>
 
-               )
-             }
+              {user &&
+                user.is_superuser && (
+                  <Button onClick={this.handleRedirect} type="primary">
+                    Add new post
+                  </Button>
+                )}
             </Content>
           </Layout>
         </Layout>
@@ -158,7 +137,7 @@ Home.propTypes = {};
 
 const mapStateToProps = createStructuredSelector({
   home: makeSelectHome(),
-  userInfo: isLogin(), 
+  userInfo: isLogin(),
 });
 
 function mapDispatchToProps(dispatch) {

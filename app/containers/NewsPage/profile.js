@@ -8,6 +8,7 @@ import { Row, Col, Card, Alert, message, Button, Input } from 'antd';
 import { get } from 'lodash';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
+import thumbnail from 'images/download.png';
 import makeSelectNewsPage from './selectors';
 import makeSelectGlobalState from '../App/selectors';
 import reducer from './reducer';
@@ -27,8 +28,6 @@ class SavedPostView extends React.Component {
     };
   }
 
-
-
   fetchPost = async id => {
     try {
       const response = await fetchSinglePost(id);
@@ -42,7 +41,6 @@ class SavedPostView extends React.Component {
   };
 
   handleViewRedirect = id => {
-    console.log(this.props.history);
     this.props.history.push(`/view/${id}`);
   };
 
@@ -52,9 +50,13 @@ class SavedPostView extends React.Component {
     const image = get(this, 'state.post.thumbnail_image', '');
     return (
       <Card
-        style={{ maxWidth: 350 }}
         className="news-box"
-        cover={<img alt="example" src={image} />}
+        cover={
+          <img
+            alt="example"
+            src={image === undefined || image === '' ? thumbnail : image}
+          />
+        }
       >
         <h3>{title}</h3>
 
@@ -80,28 +82,27 @@ export class Profile extends React.Component {
 
   async fetchSavedPosts() {
     try {
-      let response = await fectSavedPosts(this.props.match.params.id);
-      let posts = get(response,'data',[]);
+      const response = await fectSavedPosts(this.props.match.params.id);
+      const posts = get(response, 'data', []);
       this.setState({
-        savedPosts: posts
-      })
+        savedPosts: posts,
+      });
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
 
-  fetch = async (userID) => {
+  fetch = async userID => {
     try {
-      let res = await fetchProfile(userID);
-      let data = get(res,'data[0]',{});
+      const res = await fetchProfile(userID);
+      const data = get(res, 'data[0]', {});
       this.setState({
-        user: data
+        user: data,
       });
-
     } catch (e) {
       console.log(e.message);
     }
-  }
+  };
 
   componentDidMount() {
     this.props.reset();
@@ -165,7 +166,7 @@ export class Profile extends React.Component {
   };
 
   render() {
-    let image = (
+    const image = (
       <img
         style={{
           height: '120px',
@@ -175,9 +176,9 @@ export class Profile extends React.Component {
           marginBottom: '20px',
           borderRadius: '50%',
         }}
-        src={get(this,'state.user.image','')}
+        src={get(this, 'state.user.image', '')}
       />
-    )
+    );
     return (
       <div>
         <Helmet>
@@ -186,19 +187,17 @@ export class Profile extends React.Component {
         </Helmet>
         <Header history={this.props.history} />
 
-        <div className="container">
+        <div className="container" style={{ marginTop: '100px' }}>
           <Row>
             <Col span={6}>
               <Card style={{ marginRight: '20px', textAlign: 'center' }}>
-                <div>
-                  {image}
-                </div>
+                <div>{image}</div>
               </Card>
             </Col>
             <Col span={14}>
               <Card>
-                <h3>{get(this,'state.user.name','')}</h3>
-                <p>{get(this,'state.user.bio','')}</p>
+                <h3>{get(this, 'state.user.name', '')}</h3>
+                <p>{get(this, 'state.user.bio', '')}</p>
               </Card>
             </Col>
           </Row>

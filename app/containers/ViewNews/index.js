@@ -61,7 +61,7 @@ import * as a from './actions';
 const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 const loader = <Spin indicator={antIcon} />;
 const Wrapper = styled.div`
-  margin: 100px auto 20px auto;
+  margin: 100px auto auto auto;
   text-align: center;
   .main-heading {
     margin-bottom: 30px;
@@ -386,11 +386,11 @@ class CommentReplies extends React.Component {
     }
     return (
       <div style={{ paddingLeft: '50px' }}>
+        {console.log(replies)}
         <List
           itemLayout="horizontal"
           dataSource={replies}
           pagination={replies.length > 10}
-          emptyText=""
           renderItem={item => (
             <CommentReplyItem
               refetch={() => this.props.refetch()}
@@ -419,7 +419,7 @@ class Comment extends React.Component {
       loading: false,
       editDialog: false,
       editValue: '',
-      deleteDialog: '',
+      deleteDialog: false,
       totalUpvotes: 0,
       totalDownvotes: 0,
       votes: [],

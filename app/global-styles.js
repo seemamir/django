@@ -190,6 +190,30 @@ const GlobalStyle = createGlobalStyle`
       } 
     }
   }
+  /* Home page */
+  .filters{
+    width: 100%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 20px ;
+    display: flex;
+    align-content: space-around;
+    box-shadow:none;
+    button{
+      background: transparent;
+      border:none !important;
+      margin-bottom: 0 !important;
+      width: 300px;
+      font-size:18px;
+
+      :focus, :active{
+        box-shadow:none;
+        border:none;
+        outline:none
+      }
+      
+    }
+  }
   /* View Page */
   .reaction-sidebar{
     .react-box{
@@ -227,7 +251,21 @@ const GlobalStyle = createGlobalStyle`
   }
   .news-box{
     margin-bottom:  50px ;
-
+    word-wrap: break-word;
+    margin-right: 20px;
+    height:350px;
+    .ant-card-cover{
+      height:60%;
+      img{
+        height:100%;
+      }
+    }
+    
+    h3{
+      height: 30px;
+      overflow: hidden;
+    }
+ 
   }
   footer{
     background: #fff;
