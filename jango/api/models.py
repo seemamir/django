@@ -28,6 +28,9 @@ class Post(models.Model):
   embedded_image = models.TextField(blank=True)
   thumbnail_image = models.TextField(blank=True)
 
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
   def __str__(self):
     return self.title
 
@@ -37,6 +40,11 @@ class Profile(models.Model):
   bio = models.TextField(blank=True)
   image = models.TextField(blank=True)
   name = models.CharField(blank=True,max_length=150)
+
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
   
   def __str__(self):
     return "Profile for {name}".format(name=self.name)
@@ -46,6 +54,11 @@ class PostReaction(models.Model):
   reaction_type = models.CharField(max_length=20)
   user = models.ForeignKey(User,on_delete=models.CASCADE)
 
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+
   def __str__(self):
     return "Post reaction"
   class Meta:
@@ -54,6 +67,11 @@ class PostReaction(models.Model):
 class SavedPost(models.Model):
   post = models.ForeignKey('api.Post',on_delete=models.CASCADE)
   user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
 
   class Meta:
     unique_together = ('post','user')
@@ -66,12 +84,21 @@ class Comment(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   comment = models.TextField()
 
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+
   def __str__(self):
     return "Comment: {comment}".format(comment=self.comment)
 
 class CommentReply(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE)
   comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
   reply = models.TextField()
 
   def __str__(self):
@@ -80,6 +107,10 @@ class CommentReply(models.Model):
 class ForgetPassword(models.Model):
   email = models.CharField(max_length=150)
   token = models.CharField(max_length=150)
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
   def __str__(self):
     return self.email;
 
@@ -89,6 +120,10 @@ class ForgetPassword(models.Model):
 class ReplyVote(models.Model):
   reply = models.ForeignKey(CommentReply,on_delete=models.CASCADE)
   user = models.ForeignKey(User,on_delete=models.CASCADE)
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
   vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
   def __str__(self):
     return "A vote by {user} on reply {reply} type {type}".format(user=self.user,reply=self.reply,type=self.vote_type)
@@ -99,6 +134,10 @@ class ReplyVote(models.Model):
 
 class CommentVote(models.Model):
   comment = models.ForeignKey(Comment,on_delete=models.CASCADE)
+  
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
   user = models.ForeignKey(User,on_delete=models.CASCADE)
   vote_type = models.CharField(max_length=100, choices=VOTE_TYPE_CHOICES)
   

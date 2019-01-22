@@ -31,6 +31,7 @@ import {
 import { Spin } from 'antd';
 import styled from 'styled-components';
 import { empty } from 'rxjs';
+import moment from 'moment';
 import {
   fetchUser,
   postCommentReply,
@@ -290,8 +291,9 @@ class CommentReplyItem extends React.Component {
   getUser = () => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    return userID
-  }
+    return userID;
+  };
+
   render() {
     const loading = this.state.loading ? loader : <div />;
     return (
@@ -335,9 +337,7 @@ class CommentReplyItem extends React.Component {
             <div
               style={{
                 display:
-                  this.getUser() === this.props.item.user
-                    ? "block"
-                    : 'none'
+                  this.getUser() === this.props.item.user ? 'block' : 'none',
               }}
             >
               <IconText
@@ -349,13 +349,12 @@ class CommentReplyItem extends React.Component {
                 }
                 type="edit"
               />
-                
+
               <IconText
                 onClick={() => this.setState({ deleteDialog: true })}
                 type="delete"
               />
-              
-            </div>
+            </div>,
           ]}
         >
           <List.Item.Meta
@@ -365,9 +364,14 @@ class CommentReplyItem extends React.Component {
               </a>
             }
             title={
-              <a onClick={this.handleRedirect}>
-                {get(this, 'state.user.name', '')}
-              </a>
+              <div className="title">
+                <a onClick={this.handleRedirect}>
+                  {get(this, 'state.user.name', '')}
+                </a>
+                <p style={{ display: 'inline-block', fontSize: '12px' }}>
+                  {moment(+new Date(this.props.item.created_at)).fromNow()}
+                </p>
+              </div>
             }
             description={get(this, 'props.item.reply', '')}
           />
@@ -386,7 +390,6 @@ class CommentReplies extends React.Component {
     }
     return (
       <div style={{ paddingLeft: '50px' }}>
-        {console.log(replies)}
         <List
           itemLayout="horizontal"
           dataSource={replies}
@@ -565,11 +568,12 @@ class Comment extends React.Component {
       }
     }
   }
-  getUser = () =>  {
+
+  getUser = () => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const userID = get(user, 'id', null);
-    return userID
-  }
+    return userID;
+  };
 
   render() {
     const loading = this.state.loading ? loader : <div />;
@@ -624,9 +628,7 @@ class Comment extends React.Component {
             <div
               style={{
                 display:
-                  this.getUser() === this.props.comment.user
-                    ? "block"
-                    : 'none'
+                  this.getUser() === this.props.comment.user ? 'block' : 'none',
               }}
             >
               <IconText
@@ -642,7 +644,7 @@ class Comment extends React.Component {
                 onClick={() => this.setState({ deleteDialog: true })}
                 type="delete"
               />
-            </div>
+            </div>,
           ]}
         >
           <List.Item.Meta
@@ -652,9 +654,14 @@ class Comment extends React.Component {
               </a>
             }
             title={
-              <a onClick={this.handleRedirect}>
-                {get(this, 'state.user.name', '')}
-              </a>
+              <div className="title">
+                <a onClick={this.handleRedirect}>
+                  {get(this, 'state.user.name', '')}
+                </a>
+                <p style={{ display: 'inline-block', fontSize: '12px' }}>
+                  {moment(+new Date(this.props.comment.created_at)).fromNow()}
+                </p>
+              </div>
             }
             description={comment.comment}
           />

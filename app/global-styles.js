@@ -215,6 +215,12 @@ const GlobalStyle = createGlobalStyle`
     }
   }
   /* View Page */
+  .ant-list-item-meta-title a{
+    color: rgba(0,0,0,0.65);  
+    :hover{
+    color: rgba(0,0,0,0.68)
+    }
+  }
   .reaction-sidebar{
     .react-box{
       min-height: 180px;
