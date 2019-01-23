@@ -56,8 +56,7 @@ export function* setPostReaction(action) {
 export function* getPostReactions(action) {
   try {
     const response = yield call(api.getPostReactions, action.payload);
-    // run filterPostReactions to filter at the same time!
-    const postReactions = get(response, 'data', []);
+    const postReactions = get(response, 'data.results', []);
     if (postReactions instanceof Array) {
       yield put(a.savePostReactions(postReactions));
     }

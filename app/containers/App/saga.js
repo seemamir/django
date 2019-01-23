@@ -10,7 +10,7 @@ export function* fetchUser(action) {
     if (email) {
       // const { email } = yield select(makeSelectNewsPage());
       const response = yield call(api.fetchUser, action.payload);
-      const data = get(response, 'data', []);
+      const data = get(response.data, 'results', []);
       // yield put(a.loggedInAction(response.data));
       if (data.length > 0) {
         const user = data[0];
@@ -19,7 +19,7 @@ export function* fetchUser(action) {
         // fetch profile
         let userProfile = {};
         const profile = yield call(api.fetchProfile, user.id);
-        const profileData = get(profile, 'data', []);
+        const profileData = get(profile, 'data.results', []);
         if (profileData.length == 0) {
           // Create
           const create = yield call(api.createProfile, {

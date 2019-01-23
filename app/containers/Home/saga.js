@@ -7,7 +7,7 @@ import { loggedInAction } from '../App/actions';
 export function* index(action) {
   try {
     const response = yield call(api.fetchPosts, action.payload);
-    yield put(a.setPosts(response.data));
+    yield put(a.setPosts(response.data.results));
   } catch (error) {
     yield put(a.setResponse(error.response));
   }
@@ -16,8 +16,8 @@ export function* index(action) {
 export function* fetchUser() {
   try {
     const { email } = yield select(makeSelectEmail());
-    console.log(email);
     const response = yield call(api.fetchUser, email);
+    console.log(response);
     yield put(loggedInAction(response.data)); // here is the user is get now please use response to save the user.
   } catch (error) {}
 }

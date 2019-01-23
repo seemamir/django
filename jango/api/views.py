@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Post, PostReaction, SavedPost, Comment, Profile, CommentReply, CommentVote, ForgetPassword as ForgetPasswordModel, ReplyVote
 from .serializers import PostSerializer, PostReactionSerializer, SavedPostSerializer, UserSerializer,CommentSerializer, ProfileSerializer,CommentReplySerializer,CommentVoteSerializer, ReplyVoteSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 
 import random
 import string
@@ -17,7 +18,6 @@ import uuid
 import smtplib
 import json
 # Create your views here.
-
 
 class PostViewSet(viewsets.ModelViewSet):
   queryset = Post.objects.all().order_by('-id')

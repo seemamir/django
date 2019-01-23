@@ -51,6 +51,7 @@ import {
   patchPostReaction,
   deletePostReaction,
   deleteComment,
+  commentsApi,
   deleteCommentVote,
 } from './api';
 import makeSelectGlobalState from '../App/selectors';
@@ -225,7 +226,7 @@ class CommentReplyItem extends React.Component {
     if (replyId > 0) {
       try {
         const response = await fetchReplyVotes(replyId);
-        const votes = get(response, 'data', []);
+        const votes = get(response, 'data.results', []);
         const upvotes = votes.filter(c => c.vote_type == 'UP_VOTE');
         const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
         this.setState({ totalUpvotes: upvotes.length });
@@ -242,7 +243,7 @@ class CommentReplyItem extends React.Component {
       const id = get(this, 'props.item.user', null);
       if (id > 0) {
         const response = await fetchProfile(id);
-        const user = get(response, 'data[0]', {});
+        const user = get(response, 'data.results[0]', {});
         this.setState({
           user,
         });
@@ -299,7 +300,7 @@ class CommentReplyItem extends React.Component {
     return (
       <div>
         <Modal
-          title="Edit Comment"
+          title="Edit Reply"
           visible={this.state.editDialog}
           onOk={() => this.editReply()}
           onCancel={() => this.setState({ editDialog: false })}
@@ -311,7 +312,7 @@ class CommentReplyItem extends React.Component {
           {loading}
         </Modal>
         <Modal
-          title="Modal"
+          title="Delete Reply"
           visible={this.state.deleteDialog}
           onOk={() => this.deleteNow()}
           onCancel={() => this.setState({ deleteDialog: false })}
@@ -433,7 +434,7 @@ class Comment extends React.Component {
     if (commentID > 0) {
       try {
         const response = await fetchCommentVotes(commentID);
-        const votes = get(response, 'data', []);
+        const votes = get(response, 'data.results', []);
         const upvotes = votes.filter(c => c.vote_type == 'UP_VOTE');
         const downvotes = votes.filter(c => c.vote_type == 'DOWN_VOTE');
         this.setState({ totalUpvotes: upvotes.length });
@@ -470,7 +471,7 @@ class Comment extends React.Component {
   fetchUser = async uid => {
     try {
       const response1 = await fetchProfile(uid);
-      const user = get(response1, 'data[0]', {});
+      const user = get(response1, 'data.results[0]', {});
       this.setState({
         user,
       });
@@ -490,7 +491,7 @@ class Comment extends React.Component {
     const commentID = get(this, 'props.comment.id', null);
     if (commentID) {
       const response = await fetchCommentReplies(commentID);
-      const data = get(response, 'data', []);
+      const data = get(response, 'data.results', []);
       this.setState({
         replies: data,
       });
@@ -516,7 +517,7 @@ class Comment extends React.Component {
     } else {
       const user = JSON.parse(localStorage.getItem('user')) || {};
       const userID = get(user, 'id', null);
-
+      console.log(commentID,userID);
       if (commentID > 0 && userID > 0) {
         await postCommentVote({
           comment: commentID,
@@ -597,7 +598,7 @@ class Comment extends React.Component {
           {loading}
         </Modal>
         <Modal
-          title="Modal"
+          title="Delete Comment"
           visible={this.state.deleteDialog}
           onOk={() => this.deleteNow()}
           onCancel={() => this.setState({ deleteDialog: false })}
@@ -687,6 +688,9 @@ export class ViewNews extends React.Component {
     super(props);
     const { post } = props.viewNews;
     this.state = {
+      commentsListCount: 0,
+      commentsList: [],
+      commentsPage: 1,
       commentField: '',
       commentsEmpty: false,
       sentence2: post.sentence2,
@@ -698,6 +702,18 @@ export class ViewNews extends React.Component {
       totalSadReactions: 0,
       totalAngryReactions: 0,
     };
+  }
+
+  async fetchComments() {
+    const { id } = this.props.match.params;
+    try {
+      let response = await commentsApi(id,this.state.commentsPage);
+      const {data:{results}} = response;
+      let oldComments = this.state.commentsList;
+      this.setState({commentsList: [...oldComments,...results],commentsListCount: response.data.count});;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   postReaction = async type => {
@@ -753,8 +769,8 @@ export class ViewNews extends React.Component {
   componentDidMount() {
     const { id } = this.props.match.params;
     this.props.viewPost(id);
-    this.props.fetchPostComments(id);
     this.props.getPostReactions(id);
+    this.fetchComments();
     setTimeout(() => this.filterPostReactions(), 1000);
   }
 
@@ -786,6 +802,16 @@ export class ViewNews extends React.Component {
       }, 500);
     }
   };
+
+  loadNext() {
+    let page = this.state.commentsPage;
+    this.setState({
+      commentsPage: page + 1
+    });
+    setTimeout(() => {
+      this.fetchComments();
+    },50)
+  }
 
   handleChange = e => {
     const { name, value } = e.target;
@@ -823,7 +849,7 @@ export class ViewNews extends React.Component {
       const { TextArea } = Input;
       return <TextArea rows={4} />;
     };
-    const { comments } = this.props.viewNews;
+    const comments = this.state.commentsList;
     if (comments instanceof Array) {
       if (comments.length == 0) {
         return <div>No Comments</div>;
@@ -852,6 +878,10 @@ export class ViewNews extends React.Component {
 
   render() {
     const { post } = this.props.viewNews;
+    let loadMoreButton = <Button onClick={() => this.loadNext()} >Load More</Button>;
+    if (this.state.commentsList.length >= this.state.commentsListCount) {
+      loadMoreButton = <div></div>
+    }
     return (
       <div>
         <Helmet>
@@ -1019,6 +1049,10 @@ export class ViewNews extends React.Component {
                 <Row>
                   <Col span={24} style={{ textAlign: 'left' }}>
                     {this.renderComments()}
+                    <br />
+                    <div style={{textAlign: 'center',padding: "20px 20px",paddingTop: 0}} >
+                      {loadMoreButton}
+                    </div>
                   </Col>
                 </Row>
                 <Row>

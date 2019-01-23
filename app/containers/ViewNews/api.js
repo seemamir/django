@@ -4,7 +4,7 @@ export const viewPostApi = id => axios.get(`/api/post/${id}/`);
 export const updatePostApi = (id, payload) =>
   axios.post(`/api/post/${id}/`, payload);
 export const comment = data => axios.post(`/api/comment/`, data);
-export const commentsApi = id => axios.get(`/api/comment/?post=${id}`);
+export const commentsApi = (id,page=1) => axios.get(`/api/comment/?post=${id}&page=${page}`);
 export const setPostReaction = data => axios.post(`/api/post-reaction/`, data);
 export const getPostReactions = postID =>
   axios.get(`/api/post-reaction/?post=${postID}`);
