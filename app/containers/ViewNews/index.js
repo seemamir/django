@@ -130,11 +130,12 @@ class Replyform extends React.Component {
     return (
       <div>
         <Row>
+          <Col span={1}/>
           <Col span={10}>
             <textarea
               name="comment"
               rows="3"
-              style={{ height: '52px', marginTop: '20px' }}
+              style={{ height: '52px', marginTop: '20px'}}
               value={this.state.replyField}
               onChange={e => this.setState({ replyField: e.target.value })}
               placeholder="Write ur reply here"
@@ -395,7 +396,7 @@ class CommentReplies extends React.Component {
         <List
           itemLayout="horizontal"
           dataSource={replies}
-          pagination={replies.length > 10}
+          pagination={false}
           renderItem={item => (
             <CommentReplyItem
               refetch={() => this.props.refetch()}
@@ -596,7 +597,7 @@ class Comment extends React.Component {
   render() {
     const loading = this.state.loading ? loader : <div />;
     const comment = get(this, 'props.comment', { comment: '' });
-    let loadMoreButton = <a style={{marginLeft: "50px"}} onClick={() => this.loadNext()} >Load More</a>;
+    let loadMoreButton = <a className="load_more" style={{marginLeft: "50px", marginTop: "15px"}} onClick={() => this.loadNext()} >Load more replies</a>;
     if (this.state.replies.length >= this.state.repliesCount) {
       loadMoreButton = <div></div>
     }
@@ -605,7 +606,7 @@ class Comment extends React.Component {
       ReplyContent = emptyDiv;
     }
     return (
-      <div style={{ width: '80%' }}>
+      <div style={{ width: '80%'}}>
         <Modal
           title="Edit Comment"
           visible={this.state.editDialog}
@@ -688,6 +689,10 @@ class Comment extends React.Component {
             description={comment.comment}
           />
         </List.Item>
+        <ReplyContent 
+          comment={comment}
+          fetchReplies={() => this.fetchReplies()}
+        />
         <CommentReplies
           history={this.props.history}
           replies={this.state.replies}
@@ -695,10 +700,6 @@ class Comment extends React.Component {
           comment={comment}
         />
         {loadMoreButton}
-        <ReplyContent
-          comment={comment}
-          fetchReplies={() => this.fetchReplies()}
-        />
       </div>
     );
   }
@@ -905,6 +906,7 @@ export class ViewNews extends React.Component {
         <div>
           <List
             itemLayout="vertical"
+            pagination={false}
             size="large"
             dataSource={commentsA}
             renderItem={a => <div>{a}</div>}
@@ -916,7 +918,7 @@ export class ViewNews extends React.Component {
 
   render() {
     const { post } = this.props.viewNews;
-    let loadMoreButton = <Button onClick={() => this.loadNext()} >Load More</Button>;
+    let loadMoreButton = <a className="load_more" onClick={() => this.loadNext()} >Load more comments</a>;
     if (this.state.commentsList.length >= this.state.commentsListCount) {
       loadMoreButton = <div></div>
     }
@@ -1071,7 +1073,8 @@ export class ViewNews extends React.Component {
                   <Row>
                     <Col span={20} offset={2}>
                       <img
-                        height="200"
+                        height="auto"
+                        width="100%"
                         src={post.embedded_image}
                         alt="Embedded image"
                       />
@@ -1084,15 +1087,6 @@ export class ViewNews extends React.Component {
               <Col span={16} offset={2}>
                 <h2 className="comment">Comments</h2>
 
-                <Row>
-                  <Col span={24} style={{ textAlign: 'left' }}>
-                    {this.renderComments()}
-                    <br />
-                    <div style={{textAlign: 'center',padding: "20px 20px",paddingTop: 0}} >
-                      {loadMoreButton}
-                    </div>
-                  </Col>
-                </Row>
                 <Row>
                   <Col span={20}>
                     <textarea
@@ -1112,6 +1106,15 @@ export class ViewNews extends React.Component {
                     >
                       Publish
                     </Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24} style={{ textAlign: 'left' }}>
+                    {this.renderComments()}
+                    <br />
+                    <div style={{textAlign: 'left',padding: "20px 20px 20px 0",paddingTop: 0}} >
+                      {loadMoreButton}
+                    </div>
                   </Col>
                 </Row>
               </Col>

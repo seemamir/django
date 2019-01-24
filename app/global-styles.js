@@ -221,6 +221,15 @@ const GlobalStyle = createGlobalStyle`
     color: rgba(0,0,0,0.68)
     }
   }
+  .load_more{
+    border:1px solid #dddd;
+    padding: 3px 5px;
+    background: #ccc;
+    color: rgba(0,0,0,0.9);  
+    :hover{
+    color: rgba(0,0,0,0.68)
+    }
+  }
   .reaction-sidebar{
     .react-box{
       min-height: 180px;
