@@ -51,6 +51,7 @@ import {
   patchPostReaction,
   deletePostReaction,
   deleteComment,
+  commentWrite,
   commentsApi,
   deleteCommentVote,
 } from './api';
@@ -420,6 +421,8 @@ class Comment extends React.Component {
       currendUser: this.getName(),
       replyFormShow: false,
       replies: [],
+      repliesPage: 1,
+      repliesCount: null,
       loading: false,
       editDialog: false,
       editValue: '',
@@ -490,11 +493,15 @@ class Comment extends React.Component {
   fetchReplies = async () => {
     const commentID = get(this, 'props.comment.id', null);
     if (commentID) {
-      const response = await fetchCommentReplies(commentID);
-      const data = get(response, 'data.results', []);
-      this.setState({
-        replies: data,
-      });
+      let response = await fetchCommentReplies(commentID,this.state.repliesPage);
+      const {data:{results,count}} = response;
+      let oldReplies = this.state.replies;
+      if (count <= 10) {
+        this.setState({replies: results,repliesCount: count});
+      }else {
+        console.log(1);
+        this.setState({replies: [...oldReplies,...results],repliesCount: count});;
+      }
     }
   };
 
@@ -576,9 +583,23 @@ class Comment extends React.Component {
     return userID;
   };
 
+  loadNext() {
+    let page = 1 + this.state.repliesPage;
+    this.setState({
+      repliesPage: page
+    });
+    setTimeout(() => {
+      this.fetchReplies();
+    }, 10);
+  }
+
   render() {
     const loading = this.state.loading ? loader : <div />;
     const comment = get(this, 'props.comment', { comment: '' });
+    let loadMoreButton = <a style={{marginLeft: "50px"}} onClick={() => this.loadNext()} >Load More</a>;
+    if (this.state.replies.length >= this.state.repliesCount) {
+      loadMoreButton = <div></div>
+    }
     let ReplyContent = Replyform;
     if (!this.state.replyFormShow) {
       ReplyContent = emptyDiv;
@@ -673,6 +694,7 @@ class Comment extends React.Component {
           refetch={this.fetchReplies}
           comment={comment}
         />
+        {loadMoreButton}
         <ReplyContent
           comment={comment}
           fetchReplies={() => this.fetchReplies()}
@@ -708,11 +730,30 @@ export class ViewNews extends React.Component {
     const { id } = this.props.match.params;
     try {
       let response = await commentsApi(id,this.state.commentsPage);
-      const {data:{results}} = response;
+      const {data:{results,count}} = response;
       let oldComments = this.state.commentsList;
-      this.setState({commentsList: [...oldComments,...results],commentsListCount: response.data.count});;
+      if (count <= 10) {
+        this.setState({commentsList: results,commentsListCount: count});
+      }else {
+        console.log(1);
+        this.setState({commentsList: [...oldComments,...results],commentsListCount: count});;
+      }
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async postComment(data) {
+    try {
+      let response = await commentWrite(data);
+      let comment = response.data;
+      let commentsList = [...this.state.commentsList];
+      commentsList.push(comment);
+      console.log(commentsList.length);
+      this.setState({commentsList: commentsList});
+      console.log(commentsList.length);
+    } catch (e) {
+      alert(`Seomthing went wrong: ${e.message}`);
     }
   }
 
@@ -789,7 +830,7 @@ export class ViewNews extends React.Component {
     } = this;
     if (commentField) {
       this.props.match.params.id;
-      this.props.comment({
+      this.postComment({
         comment: this.state.commentField,
         post: parseInt(get(this, 'props.match.params.id', null)),
         user: get(this, 'props.globalState.user.id', null),
@@ -797,9 +838,6 @@ export class ViewNews extends React.Component {
       this.setState({
         commentField: '',
       });
-      setTimeout(() => {
-        this.props.fetchPostComments(id);
-      }, 500);
     }
   };
 

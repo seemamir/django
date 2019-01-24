@@ -4,6 +4,7 @@ export const viewPostApi = id => axios.get(`/api/post/${id}/`);
 export const updatePostApi = (id, payload) =>
   axios.post(`/api/post/${id}/`, payload);
 export const comment = data => axios.post(`/api/comment/`, data);
+export const commentWrite = data => axios.post(`/api/comment/`, data);
 export const commentsApi = (id,page=1) => axios.get(`/api/comment/?post=${id}&page=${page}`);
 export const setPostReaction = data => axios.post(`/api/post-reaction/`, data);
 export const getPostReactions = postID =>
@@ -12,8 +13,8 @@ export const saveAsSavedPost = data => axios.post(`/api/saved-post/`, data);
 export const fetchUser = userid => axios.get(`/api/user/${userid}`);
 export const fetchProfile = userid =>
   axios.get(`/api/user-profile/?user=${userid}`);
-export const fetchCommentReplies = commentID =>
-  axios.get(`/api/comment-reply/?comment=${commentID}`);
+export const fetchCommentReplies = (commentID,page=1) =>
+  axios.get(`/api/comment-reply/?comment=${commentID}&page=${page}`);
 export const postCommentReply = data => axios.post(`/api/comment-reply/`, data);
 export const postCommentVote = data => axios.post(`/api/comment-vote/`, data);
 export const patchCommentVote = data => axios.patch(`/api/comment-vote/${data.id}/`, data);
