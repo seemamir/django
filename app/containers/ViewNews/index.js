@@ -597,7 +597,7 @@ class Comment extends React.Component {
   render() {
     const loading = this.state.loading ? loader : <div />;
     const comment = get(this, 'props.comment', { comment: '' });
-    let loadMoreButton = <a className="load_more" style={{marginLeft: "50px", marginTop: "15px"}} onClick={() => this.loadNext()} >Load more replies</a>;
+    let loadMoreButton = <a className="load_more" style={{ marginLeft: "50px", marginTop: "15px" }} onClick={() => this.loadNext()} >View {this.state.replies.length} replies </a>;
     if (this.state.replies.length >= this.state.repliesCount) {
       loadMoreButton = <div></div>
     }
