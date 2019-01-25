@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Count
 from .models import Post, PostReaction, SavedPost, Comment, Profile, CommentReply, CommentVote, ForgetPassword as ForgetPasswordModel, ReplyVote
 from .serializers import PostSerializer, PostReactionSerializer, SavedPostSerializer, UserSerializer,CommentSerializer, ProfileSerializer,CommentReplySerializer,CommentVoteSerializer, ReplyVoteSerializer
 from django.shortcuts import get_object_or_404
@@ -38,7 +39,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
   filter_fields = ('id','user')
 
 class CommentViewSet(viewsets.ModelViewSet):
-  queryset = Comment.objects.all()
+  queryset = Comment.objects.all().annotate(total_votes=Count('commentvote')).annotate(total_replies=Count('commentreply')).order_by("-total_replies","-total_votes")
   serializer_class = CommentSerializer
   filter_backends = (DjangoFilterBackend,)
   filter_fields = ('id','user','post')

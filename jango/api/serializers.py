@@ -56,8 +56,10 @@ class CommentSerializer(serializers.ModelSerializer):
   class Meta:
     model = Comment
     fields = "__all__"
+    ordering = ['-id']
 
 class ReplyVoteSerializer(serializers.ModelSerializer):
   class Meta:
     model = ReplyVote
     fields = "__all__"
+    ordering = ['-id']
