@@ -753,6 +753,7 @@ export class ViewNews extends React.Component {
     this.state = {
       commentsListCount: 0,
       commentsList: [],
+      currentSorting: 'Recent',
       commentsPage: 1,
       commentField: '',
       commentsEmpty: false,
@@ -770,18 +771,24 @@ export class ViewNews extends React.Component {
   async fetchComments() {
     const { id } = this.props.match.params;
     try {
-      const response = await commentsApi(id, this.state.commentsPage);
+      const response = await commentsApi(id, this.state.commentsPage,this.state.currentSorting);
       const {
         data: { results, count },
       } = response;
       const oldComments = this.state.commentsList;
       if (count <= 10) {
-        this.setState({ commentsList: results, commentsListCount: count });
+        this.setState({commentsList: []});
+        setTimeout(() => {
+          this.setState({ commentsList: results, commentsListCount: count });
+        },40)
       } else {
-        this.setState({
-          commentsList: [...oldComments, ...results],
-          commentsListCount: count,
-        });
+        this.setState({commentsList: []});
+        setTimeout(() => {
+          this.setState({
+            commentsList: [...oldComments, ...results],
+            commentsListCount: count,
+          });
+        },40)
       }
     } catch (e) {
       throw e
@@ -794,7 +801,10 @@ export class ViewNews extends React.Component {
       const comment = response.data;
       const commentsList = [...this.state.commentsList];
       commentsList.unshift(comment);
-      this.setState({ commentsList });
+      this.setState({commentsList: []});
+      setTimeout(() => {
+        this.setState({ commentsList });
+      },10);
     } catch (e) {
       alert(`Seomthing went wrong: ${e.message}`);
     }
@@ -957,6 +967,15 @@ export class ViewNews extends React.Component {
     }
   };
 
+  setSorting(type) {
+    this.setState({
+      currentSorting: type
+    });
+    setTimeout(() => {
+      this.fetchComments();
+    },40)
+  }
+
   render() {
     const { post } = this.props.viewNews;
     let loadMoreButton = (
@@ -969,8 +988,8 @@ export class ViewNews extends React.Component {
     }
     const menu = (
       <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="1"><Icon type="message" />Top Comments</Menu.Item>
-        <Menu.Item key="2"><Icon type="rise" />Newest first</Menu.Item>
+        <Menu.Item onClick={() => this.setSorting('Top') } key="1"><Icon type="message" />Top Comments</Menu.Item>
+        <Menu.Item onClick={() => this.setSorting('Recent') } key="2"><Icon type="rise" />Newest first</Menu.Item>
       </Menu>
     );
     return (
@@ -1140,7 +1159,7 @@ export class ViewNews extends React.Component {
               <Row>
                 <Col span={6}>
                   <Dropdown.Button onClick={this.handleButtonClick} overlay={menu} style={{margin: "40px auto"}}>
-                    Sort by
+                    Sort by&nbsp;  { " " + this.state.currentSorting }
                   </Dropdown.Button>
                 </Col>
               </Row>

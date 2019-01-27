@@ -3,7 +3,9 @@ from django.db.models import Count
 from .models import Post, PostReaction, SavedPost, Comment, Profile, CommentReply, CommentVote, ForgetPassword as ForgetPasswordModel, ReplyVote
 from .serializers import PostSerializer, PostReactionSerializer, SavedPostSerializer, UserSerializer,CommentSerializer, ProfileSerializer,CommentReplySerializer,CommentVoteSerializer, ReplyVoteSerializer
 from django.shortcuts import get_object_or_404
+import requests
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
 
 import random
 import string
@@ -39,11 +41,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
   filter_fields = ('id','user')
 
 class CommentViewSet(viewsets.ModelViewSet):
-  queryset = Comment.objects.all().annotate(total_votes=Count('commentvote')).annotate(total_replies=Count('commentreply')).order_by("-total_replies","-total_votes")
-
   serializer_class = CommentSerializer
-  filter_backends = (DjangoFilterBackend,)
+  queryset = Comment.objects.all().annotate(total_votes=Count('commentvote')).annotate(total_replies=Count('commentreply'))
+  filter_backends = (DjangoFilterBackend,filters.OrderingFilter,)
   filter_fields = ('id','user','post')
+  ordering_fields = ('id','total_votes','total_replies')
 
 class CommentReplyViewSet(viewsets.ModelViewSet):
   queryset = CommentReply.objects.all().order_by('-id')

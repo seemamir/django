@@ -1,7 +1,7 @@
 pip install pipenv
 pipenv shell
 pip install django djoser djangorestframework django-rest-swagger django-allauth django-rest-auth django-filter django-cors-headers
-manage.py migrate
 manage.py migrate --run-syncdb
+manage.py migrate
 manage.py runserver
 
