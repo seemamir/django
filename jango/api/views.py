@@ -40,12 +40,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
   queryset = Comment.objects.all().annotate(total_votes=Count('commentvote')).annotate(total_replies=Count('commentreply')).order_by("-total_replies","-total_votes")
+
   serializer_class = CommentSerializer
   filter_backends = (DjangoFilterBackend,)
   filter_fields = ('id','user','post')
 
 class CommentReplyViewSet(viewsets.ModelViewSet):
-  queryset = CommentReply.objects.all()
+  queryset = CommentReply.objects.all().order_by('-id')
   serializer_class = CommentReplySerializer
   filter_backends = (DjangoFilterBackend,)
   filter_fields = ('id','user','comment')

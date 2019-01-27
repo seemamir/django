@@ -222,6 +222,9 @@ const GlobalStyle = createGlobalStyle`
     }
   }
   .load_more{
+    position: relative;
+    margin-top:10px;
+    display: inline-block;
     border:1px solid #dddd;
     padding: 3px 5px;
     background: #ccc;

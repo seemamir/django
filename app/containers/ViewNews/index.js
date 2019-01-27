@@ -10,11 +10,8 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-import { Link } from 'react-router-dom';
 import injectSaga from 'utils/injectSaga';
 import { get } from 'lodash';
-import createHistory from 'history/createBrowserHistory';
-
 import injectReducer from 'utils/injectReducer';
 import {
   Row,
@@ -27,13 +24,13 @@ import {
   Input,
   Modal,
   message,
+  Dropdown,
+  Menu
 } from 'antd';
 import { Spin } from 'antd';
 import styled from 'styled-components';
-import { empty } from 'rxjs';
 import moment from 'moment';
 import {
-  fetchUser,
   postCommentReply,
   fetchCommentReplies,
   fetchProfile,
@@ -45,8 +42,7 @@ import {
   deleteCommentReply,
   patchReplyVote,
   patchComment,
-  deleteReplyVote,
-  deletecomment,
+  deleteReplyVote,  
   patchCommentVote,
   patchPostReaction,
   deletePostReaction,
@@ -130,12 +126,12 @@ class Replyform extends React.Component {
     return (
       <div>
         <Row>
-          <Col span={1}/>
+          <Col span={1} />
           <Col span={10}>
             <textarea
               name="comment"
               rows="3"
-              style={{ height: '52px', marginTop: '20px'}}
+              style={{ height: '52px', marginTop: '20px' }}
               value={this.state.replyField}
               onChange={e => this.setState({ replyField: e.target.value })}
               placeholder="Write ur reply here"
@@ -423,6 +419,7 @@ class Comment extends React.Component {
       replyFormShow: false,
       replies: [],
       repliesPage: 1,
+      showReplies: false,
       repliesCount: null,
       loading: false,
       editDialog: false,
@@ -494,14 +491,21 @@ class Comment extends React.Component {
   fetchReplies = async () => {
     const commentID = get(this, 'props.comment.id', null);
     if (commentID) {
-      let response = await fetchCommentReplies(commentID,this.state.repliesPage);
-      const {data:{results,count}} = response;
-      let oldReplies = this.state.replies;
+      const response = await fetchCommentReplies(
+        commentID,
+        this.state.repliesPage,
+      );
+      const {
+        data: { results, count },
+      } = response;
+      const oldReplies = this.state.replies;
       if (count <= 10) {
-        this.setState({replies: results,repliesCount: count});
-      }else {
-        console.log(1);
-        this.setState({replies: [...oldReplies,...results],repliesCount: count});;
+        this.setState({ replies: results, repliesCount: count });
+      } else {
+        this.setState({
+          replies: [...oldReplies, ...results],
+          repliesCount: count,
+        });
       }
     }
   };
@@ -525,7 +529,6 @@ class Comment extends React.Component {
     } else {
       const user = JSON.parse(localStorage.getItem('user')) || {};
       const userID = get(user, 'id', null);
-      console.log(commentID,userID);
       if (commentID > 0 && userID > 0) {
         await postCommentVote({
           comment: commentID,
@@ -585,9 +588,9 @@ class Comment extends React.Component {
   };
 
   loadNext() {
-    let page = 1 + this.state.repliesPage;
+    const page = 1 + this.state.repliesPage;
     this.setState({
-      repliesPage: page
+      repliesPage: page,
     });
     setTimeout(() => {
       this.fetchReplies();
@@ -597,16 +600,54 @@ class Comment extends React.Component {
   render() {
     const loading = this.state.loading ? loader : <div />;
     const comment = get(this, 'props.comment', { comment: '' });
-    let loadMoreButton = <a className="load_more" style={{ marginLeft: "50px", marginTop: "15px" }} onClick={() => this.loadNext()} >View {this.state.replies.length} replies </a>;
-    if (this.state.replies.length >= this.state.repliesCount) {
-      loadMoreButton = <div></div>
-    }
+
     let ReplyContent = Replyform;
     if (!this.state.replyFormShow) {
       ReplyContent = emptyDiv;
     }
+    let replies = (
+      <CommentReplies
+        history={this.props.history}
+        replies={this.state.replies}
+        comment={comment}
+      />
+    );
+    const count = this.state.repliesCount;
+    let loadMoreButton = (
+      <a
+        className="load_more"
+        style={{ marginLeft: '50px', marginTop: '15px' }}
+        onClick={() => this.loadNext()}
+      >
+        load more
+      </a>
+    );
+    if (this.state.replies.length >= this.state.repliesCount) {
+      loadMoreButton = <div />;
+    }
+    let showRepliesButton = (
+      <a
+        className="load_more"
+        style={{ marginLeft: '20px' }}
+        onClick={() => this.setState({ showReplies: true })}
+      >
+        View {this.state.repliesCount} replies
+      </a>
+    );
+    if (this.state.showReplies === false) {
+      replies = <div />;
+    }
+    if (this.state.showReplies) {
+      showRepliesButton = <div />;
+    }
+    if (this.state.repliesCount == 0) {
+      showRepliesButton = <div />;
+    }
+    if (!this.state.showReplies) {
+      loadMoreButton = <div></div>
+    }
     return (
-      <div style={{ width: '80%'}}>
+      <div style={{ width: '80%' }}>
         <Modal
           title="Edit Comment"
           visible={this.state.editDialog}
@@ -645,7 +686,10 @@ class Comment extends React.Component {
             <Icon
               type="aliwangwang"
               onClick={() =>
-                this.setState({ replyFormShow: !this.state.replyFormShow })
+                this.setState({
+                  replyFormShow: !this.state.replyFormShow,
+                  showReplies: true,
+                })
               }
             />,
             <div
@@ -689,16 +733,12 @@ class Comment extends React.Component {
             description={comment.comment}
           />
         </List.Item>
-        <ReplyContent 
+        {showRepliesButton}
+        <ReplyContent
           comment={comment}
           fetchReplies={() => this.fetchReplies()}
         />
-        <CommentReplies
-          history={this.props.history}
-          replies={this.state.replies}
-          refetch={this.fetchReplies}
-          comment={comment}
-        />
+        {replies}
         {loadMoreButton}
       </div>
     );
@@ -730,29 +770,31 @@ export class ViewNews extends React.Component {
   async fetchComments() {
     const { id } = this.props.match.params;
     try {
-      let response = await commentsApi(id,this.state.commentsPage);
-      const {data:{results,count}} = response;
-      let oldComments = this.state.commentsList;
+      const response = await commentsApi(id, this.state.commentsPage);
+      const {
+        data: { results, count },
+      } = response;
+      const oldComments = this.state.commentsList;
       if (count <= 10) {
-        this.setState({commentsList: results,commentsListCount: count});
-      }else {
-        console.log(1);
-        this.setState({commentsList: [...oldComments,...results],commentsListCount: count});;
+        this.setState({ commentsList: results, commentsListCount: count });
+      } else {
+        this.setState({
+          commentsList: [...oldComments, ...results],
+          commentsListCount: count,
+        });
       }
     } catch (e) {
-      console.log(e);
+      throw e
     }
   }
 
   async postComment(data) {
     try {
-      let response = await commentWrite(data);
-      let comment = response.data;
-      let commentsList = [...this.state.commentsList];
-      commentsList.push(comment);
-      console.log(commentsList.length);
-      this.setState({commentsList: commentsList});
-      console.log(commentsList.length);
+      const response = await commentWrite(data);
+      const comment = response.data;
+      const commentsList = [...this.state.commentsList];
+      commentsList.unshift(comment);
+      this.setState({ commentsList });
     } catch (e) {
       alert(`Seomthing went wrong: ${e.message}`);
     }
@@ -773,7 +815,6 @@ export class ViewNews extends React.Component {
         currentReaction.reaction_type = type;
         await patchPostReaction(currentReaction);
       }
-      console.log(currentReaction, type);
       setTimeout(() => {
         this.props.getPostReactions(postId);
       }, 500);
@@ -843,13 +884,13 @@ export class ViewNews extends React.Component {
   };
 
   loadNext() {
-    let page = this.state.commentsPage;
+    const page = this.state.commentsPage;
     this.setState({
-      commentsPage: page + 1
+      commentsPage: page + 1,
     });
     setTimeout(() => {
       this.fetchComments();
-    },50)
+    }, 50);
   }
 
   handleChange = e => {
@@ -918,10 +959,20 @@ export class ViewNews extends React.Component {
 
   render() {
     const { post } = this.props.viewNews;
-    let loadMoreButton = <a className="load_more" onClick={() => this.loadNext()} >Load more comments</a>;
+    let loadMoreButton = (
+      <a className="load_more" onClick={() => this.loadNext()}>
+        Load more comments
+      </a>
+    );
     if (this.state.commentsList.length >= this.state.commentsListCount) {
-      loadMoreButton = <div></div>
+      loadMoreButton = <div />;
     }
+    const menu = (
+      <Menu onClick={this.handleMenuClick}>
+        <Menu.Item key="1"><Icon type="message" />Top Comments</Menu.Item>
+        <Menu.Item key="2"><Icon type="rise" />Newest first</Menu.Item>
+      </Menu>
+    );
     return (
       <div>
         <Helmet>
@@ -1084,9 +1135,17 @@ export class ViewNews extends React.Component {
               </Col>
             </Row>
             <Row>
+              <h2 className="comment">Comments</h2>
+              <Col span={24}>
+              <Row>
+                <Col span={6}>
+                  <Dropdown.Button onClick={this.handleButtonClick} overlay={menu} style={{margin: "40px auto"}}>
+                    Sort by
+                  </Dropdown.Button>
+                </Col>
+              </Row>
+              </Col>
               <Col span={16} offset={2}>
-                <h2 className="comment">Comments</h2>
-
                 <Row>
                   <Col span={20}>
                     <textarea
@@ -1112,7 +1171,13 @@ export class ViewNews extends React.Component {
                   <Col span={24} style={{ textAlign: 'left' }}>
                     {this.renderComments()}
                     <br />
-                    <div style={{textAlign: 'left',padding: "20px 20px 20px 0",paddingTop: 0}} >
+                    <div
+                      style={{
+                        textAlign: 'left',
+                        padding: '20px 20px 20px 0',
+                        paddingTop: 0,
+                      }}
+                    >
                       {loadMoreButton}
                     </div>
                   </Col>
